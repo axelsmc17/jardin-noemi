@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bienvenida - Tu App Especial</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      background: radial-gradient(circle at center, #1a0826 0%, #08020f 100%);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #fff;
+      overflow-x: hidden;
+      padding: 20px;
+    }
+
+    /* Fondo de estrellas */
+    .stars {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      background: radial-gradient(2px 2px at 20px 30px, #ffffff, rgba(0,0,0,0)),
+                  radial-gradient(2px 2px at 40px 70px, #ff758c, rgba(0,0,0,0)),
+                  radial-gradient(1px 1px at 90px 40px, #ffffff, rgba(0,0,0,0)),
+                  radial-gradient(2px 2px at 160px 120px, #ffa07a, rgba(0,0,0,0));
+      background-repeat: repeat;
+      background-size: 200px 200px;
+      opacity: 0.6;
+      animation: starsAnim 4s linear infinite alternate;
+    }
+
+    @keyframes starsAnim {
+      from { opacity: 0.3; }
+      to { opacity: 0.8; }
+    }
+
+    /* Encabezado */
+    header {
+      text-align: center;
+      margin-top: 15px;
+      z-index: 10;
+    }
+
+    header h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      background: linear-gradient(45deg, #ff416c, #ff4b2b, #ff758c);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 0 25px rgba(255, 65, 108, 0.6);
+      margin-bottom: 6px;
+    }
+
+    header p {
+      font-size: 1.05rem;
+      color: #e0d5e6;
+      font-weight: 300;
+    }
+
+    /* Contenedor de la Rosa */
+    .flower-container {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 15px 0;
+      z-index: 10;
+    }
+
+    .rose-svg {
+      width: 280px;
+      height: 340px;
+      filter: drop-shadow(0 0 35px rgba(255, 40, 90, 0.7));
+      animation: floatRose 3.5s ease-in-out infinite;
+    }
+
+    @keyframes floatRose {
+      0%, 100% { transform: translateY(0px) scale(1); }
+      50% { transform: translateY(-15px) scale(1.02); }
+    }
+
+    /* Mensaje interactivo */
+    .message-box {
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+      border: 1px solid rgba(255, 117, 140, 0.3);
+      border-radius: 20px;
+      padding: 18px 25px;
+      text-align: center;
+      max-width: 340px;
+      font-size: 1rem;
+      line-height: 1.5;
+      color: #fff;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      transition: all 0.4s ease;
+      z-index: 10;
+    }
+
+    /* Botón único */
+    .controls {
+      margin-bottom: 25px;
+      z-index: 10;
+      width: 100%;
+      max-width: 320px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .btn-action {
+      width: 100%;
+      background: linear-gradient(135deg, #ff2a5f, #ff647c);
+      border: none;
+      color: white;
+      padding: 16px 30px;
+      font-size: 1.2rem;
+      font-weight: 700;
+      border-radius: 50px;
+      cursor: pointer;
+      box-shadow: 0 6px 25px rgba(255, 42, 95, 0.6);
+      transition: transform 0.2s, box-shadow 0.2s;
+      outline: none;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .btn-action:hover {
+      transform: translateY(-2px) scale(1.03);
+      box-shadow: 0 8px 30px rgba(255, 42, 95, 0.8);
+    }
+
+    .btn-action:active {
+      transform: scale(0.97);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="stars"></div>
+
+  <!-- Encabezado -->
+  <header>
+    <h1>¡Bienvenida! ✨</h1>
+    <p>Esta es tu app hecha especialmente para ti</p>
+  </header>
+
+  <!-- Rosa SVG -->
+  <div class="flower-container">
+    <svg class="rose-svg" viewBox="0 0 200 260" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="stem" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#1b4317"/>
+          <stop offset="50%" stop-color="#38761d"/>
+          <stop offset="100%" stop-color="#133010"/>
+        </linearGradient>
+        <linearGradient id="leaf" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#55a630"/>
+          <stop offset="100%" stop-color="#113809"/>
+        </linearGradient>
+        <linearGradient id="petalDark" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stop-color="#a4133c"/>
+          <stop offset="100%" stop-color="#590d22"/>
+        </linearGradient>
+        <linearGradient id="petalMain" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#ff4d6d"/>
+          <stop offset="50%" stop-color="#c9184a"/>
+          <stop offset="100%" stop-color="#800f2f"/>
+        </linearGradient>
+        <linearGradient id="petalLight" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stop-color="#ff8fa3"/>
+          <stop offset="100%" stop-color="#ff4d6d"/>
+        </linearGradient>
+        <linearGradient id="petalCenter" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#ffb3c1"/>
+          <stop offset="100%" stop-color="#c9184a"/>
+        </linearGradient>
+      </defs>
+
+      <!-- Tallo y Hojas -->
+      <path d="M100,120 C95,160 105,200 100,250" stroke="url(#stem)" stroke-width="6" fill="none" stroke-linecap="round"/>
+      <path d="M97,160 Q90,155 94,150 Q98,155 97,160 Z" fill="#1b4317"/>
+      <path d="M102,190 Q108,185 104,180 Q100,185 102,190 Z" fill="#1b4317"/>
+
+      <g>
+        <path d="M97,175 C60,160 50,185 97,190 Z" fill="url(#leaf)"/>
+        <path d="M97,175 Q75,178 60,185" stroke="#2d6a4f" stroke-width="1" fill="none"/>
+      </g>
+      <g>
+        <path d="M103,195 C140,180 150,205 103,210 Z" fill="url(#leaf)"/>
+        <path d="M103,195 Q125,198 140,205" stroke="#2d6a4f" stroke-width="1" fill="none"/>
+      </g>
+
+      <path d="M85,115 Q100,135 115,115 Q100,125 85,115 Z" fill="#2d6a4f"/>
+
+      <!-- Pétalos -->
+      <path d="M50,85 C40,40 80,30 100,55 C120,30 160,40 150,85 C135,125 65,125 50,85 Z" fill="url(#petalDark)"/>
+      <path d="M58,80 C50,45 85,35 100,60 C115,35 150,45 142,80 C130,115 70,115 58,80 Z" fill="url(#petalMain)"/>
+      <path d="M68,75 C65,50 90,45 100,65 C110,45 135,50 132,75 C125,100 75,100 68,75 Z" fill="url(#petalLight)"/>
+      <path d="M78,70 C75,52 125,52 122,70 C120,88 80,88 78,70 Z" fill="url(#petalMain)"/>
+      <path d="M84,66 C82,55 118,55 116,66 C115,78 85,78 84,66 Z" fill="url(#petalCenter)"/>
+      <path d="M90,63 C88,57 112,57 110,63 C109,71 91,71 90,63 Z" fill="#fff0f3"/>
+    </svg>
+  </div>
+
+  <!-- Mensaje interactivo -->
+  <div class="message-box" id="message">
+    🌹 "Bienvenida a tu lugar especial. Haz clic abajo para descubrir la magia."
+  </div>
+
+  <!-- Único botón "APLASTALO" -->
+  <div class="controls">
+    <button class="btn-action" id="btnPlay">
+      ✨ APLASTALO
+    </button>
+  </div>
+
+  <!-- 🎵 AQUÍ EDITAS TU MÚSICA: Pon la ruta/nombre de tu archivo .mp3 en el src="" -->
+  <audio id="bgMusic" loop src="musica.mp3"></audio>
+
+  <script>
+    const btnPlay = document.getElementById('btnPlay');
+    const bgMusic = document.getElementById('bgMusic');
+    const message = document.getElementById('message');
+
+    const mensajes = [
+      " 'Bienvenida a tu lugar especial.. Espero que saque una sonrisa en tu rostro!'",
+      " 'Eres una persona increíble, nunca dejes de brillar.'",
+      " 'Disfruta  de este pequeño rincón preparado para ti.'",
+      " 'Un detalle único para alguien totalmente única.'"
+    ];
+
+    let indiceMensaje = 0;
+    let sonando = false;
+
+    btnPlay.addEventListener('click', () => {
+      if (!sonando) {
+        bgMusic.play().catch(e => console.log("Asegúrate de colocar tu archivo .mp3 correcto en el src de audio."));
+        sonando = true;
+        btnPlay.innerHTML = "⏸ PAUSAR MÚSICA";
+        btnPlay.style.background = "linear-gradient(135deg, #11998e, #38ef7d)";
+      } else {
+        bgMusic.pause();
+        sonando = false;
+        btnPlay.innerHTML = "✨ APLASTALO";
+        btnPlay.style.background = "linear-gradient(135deg, #ff2a5f, #ff647c)";
+      }
+
+      indiceMensaje = (indiceMensaje + 1) % mensajes.length;
+      message.style.opacity = 0;
+      setTimeout(() => {
+        message.innerText = mensajes[indiceMensaje];
+        message.style.opacity = 1;
+      }, 300);
+    });
+  </script>
+</body>
+</html>
