@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bienvenida - Tu App Especial</title>
+  <title>Para Noemi ✨</title>
   <style>
     * {
       box-sizing: border-box;
@@ -24,8 +24,7 @@
       padding: 20px;
     }
 
-    /* Fondo de estrellas */
-    .stars {
+    .estrellas {
       position: fixed;
       top: 0;
       left: 0;
@@ -39,23 +38,67 @@
       background-repeat: repeat;
       background-size: 200px 200px;
       opacity: 0.6;
-      animation: starsAnim 4s linear infinite alternate;
+      animation: animEstrellas 4s linear infinite alternate;
     }
 
-    @keyframes starsAnim {
+    @keyframes animEstrellas {
       from { opacity: 0.3; }
       to { opacity: 0.8; }
     }
 
-    /* Encabezado */
+    #pantalla-bienvenida {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(8, 2, 15, 0.95);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 100;
+      cursor: pointer;
+      text-align: center;
+      padding: 20px;
+      transition: opacity 0.8s ease;
+    }
+
+    #pantalla-bienvenida h1 {
+      font-size: 2.2rem;
+      background: linear-gradient(45deg, #ff416c, #ff758c);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 15px;
+    }
+
+    #pantalla-bienvenida p {
+      font-size: 1.1rem;
+      color: #e0d5e6;
+      animation: pulsoTexto 2s infinite;
+    }
+
+    @keyframes pulsoTexto {
+      0%, 100% { opacity: 0.6; }
+      50% { opacity: 1; }
+    }
+
     header {
       text-align: center;
       margin-top: 15px;
       z-index: 10;
+      opacity: 0;
+      transform: translateY(-20px);
+      transition: all 1s ease 0.3s;
+    }
+
+    header.mostrar {
+      opacity: 1;
+      transform: translateY(0);
     }
 
     header h1 {
-      font-size: 2.5rem;
+      font-size: 2.3rem;
       font-weight: 700;
       background: linear-gradient(45deg, #ff416c, #ff4b2b, #ff758c);
       -webkit-background-clip: text;
@@ -65,205 +108,238 @@
     }
 
     header p {
-      font-size: 1.05rem;
+      font-size: 1rem;
       color: #e0d5e6;
       font-weight: 300;
     }
 
-    /* Contenedor de la Rosa */
-    .flower-container {
+    .contenido-principal {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      margin: 20px 0;
+      z-index: 10;
+      width: 100%;
+      max-width: 600px;
+    }
+
+    @media (min-width: 768px) {
+      .contenido-principal {
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+      }
+    }
+
+    .contenedor-flor {
       position: relative;
       display: flex;
       justify-content: center;
       align-items: center;
-      margin: 15px 0;
-      z-index: 10;
+      transform: translateY(150px);
+      opacity: 0;
+      transition: all 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
 
-    .rose-svg {
-      width: 280px;
-      height: 340px;
+    .contenedor-flor.mostrar {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    .svg-rosa {
+      width: 250px;
+      height: 310px;
       filter: drop-shadow(0 0 35px rgba(255, 40, 90, 0.7));
-      animation: floatRose 3.5s ease-in-out infinite;
+      animation: flotarRosa 3.5s ease-in-out infinite;
     }
 
-    @keyframes floatRose {
+    @keyframes flotarRosa {
       0%, 100% { transform: translateY(0px) scale(1); }
-      50% { transform: translateY(-15px) scale(1.02); }
+      50% { transform: translateY(-10px) scale(1.02); }
     }
 
-    /* Mensaje interactivo */
-    .message-box {
-      background: rgba(255, 255, 255, 0.08);
-      backdrop-filter: blur(15px);
-      -webkit-backdrop-filter: blur(15px);
-      border: 1px solid rgba(255, 117, 140, 0.3);
-      border-radius: 20px;
-      padding: 18px 25px;
-      text-align: center;
-      max-width: 340px;
-      font-size: 1rem;
-      line-height: 1.5;
-      color: #fff;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-      transition: all 0.4s ease;
+    .controles {
+      margin-bottom: 20px;
       z-index: 10;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 1s ease 0.6s;
     }
 
-    /* Botón único */
-    .controls {
-      margin-bottom: 25px;
-      z-index: 10;
-      width: 100%;
-      max-width: 320px;
-      display: flex;
-      justify-content: center;
+    .controles.mostrar {
+      opacity: 1;
+      transform: translateY(0);
     }
 
-    .btn-action {
-      width: 100%;
+    .boton-carta {
       background: linear-gradient(135deg, #ff2a5f, #ff647c);
       border: none;
       color: white;
-      padding: 16px 30px;
-      font-size: 1.2rem;
+      padding: 14px 28px;
+      font-size: 1.1rem;
       font-weight: 700;
       border-radius: 50px;
       cursor: pointer;
       box-shadow: 0 6px 25px rgba(255, 42, 95, 0.6);
       transition: transform 0.2s, box-shadow 0.2s;
       outline: none;
-      text-transform: uppercase;
-      letter-spacing: 1px;
+      letter-spacing: 0.5px;
     }
 
-    .btn-action:hover {
-      transform: translateY(-2px) scale(1.03);
+    .boton-carta:hover {
+      transform: scale(1.05);
       box-shadow: 0 8px 30px rgba(255, 42, 95, 0.8);
     }
 
-    .btn-action:active {
-      transform: scale(0.97);
+    .caja-carta {
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+      border: 1px solid rgba(255, 117, 140, 0.4);
+      border-radius: 20px;
+      padding: 22px;
+      max-width: 300px;
+      font-size: 0.95rem;
+      line-height: 1.6;
+      color: #fff;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      z-index: 10;
+      opacity: 0;
+      transform: scale(0.8) translateX(-30px);
+      pointer-events: none;
+      transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .caja-carta.mostrar {
+      opacity: 1;
+      transform: scale(1) translateX(0);
+      pointer-events: auto;
+    }
+
+    .caja-carta h3 {
+      color: #ff8fa3;
+      margin-bottom: 10px;
+      font-size: 1.2rem;
     }
   </style>
 </head>
 <body>
 
-  <div class="stars"></div>
+  <div class="estrellas"></div>
 
-  <!-- Encabezado -->
-  <header>
-    <h1>¡Bienvenida! ✨</h1>
-    <p>Esta es tu app hecha especialmente para ti</p>
+  <div id="pantalla-bienvenida">
+    <h1>✨ Toca la pantalla ✨</h1>
+    <p>Haz clic en cualquier parte para comenzar</p>
+  </div>
+
+  <header id="encabezado-principal">
+    <h1>Para Noemi 💖</h1>
+    <p>Un pequeño detalle hecho con el corazón</p>
   </header>
 
-  <!-- Rosa SVG -->
-  <div class="flower-container">
-    <svg class="rose-svg" viewBox="0 0 200 260" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <linearGradient id="stem" x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="0%" stop-color="#1b4317"/>
-          <stop offset="50%" stop-color="#38761d"/>
-          <stop offset="100%" stop-color="#133010"/>
-        </linearGradient>
-        <linearGradient id="leaf" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stop-color="#55a630"/>
-          <stop offset="100%" stop-color="#113809"/>
-        </linearGradient>
-        <linearGradient id="petalDark" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stop-color="#a4133c"/>
-          <stop offset="100%" stop-color="#590d22"/>
-        </linearGradient>
-        <linearGradient id="petalMain" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stop-color="#ff4d6d"/>
-          <stop offset="50%" stop-color="#c9184a"/>
-          <stop offset="100%" stop-color="#800f2f"/>
-        </linearGradient>
-        <linearGradient id="petalLight" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stop-color="#ff8fa3"/>
-          <stop offset="100%" stop-color="#ff4d6d"/>
-        </linearGradient>
-        <linearGradient id="petalCenter" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stop-color="#ffb3c1"/>
-          <stop offset="100%" stop-color="#c9184a"/>
-        </linearGradient>
-      </defs>
+  <div class="contenido-principal">
+    <div class="contenedor-flor" id="contenedor-flor">
+      <svg class="svg-rosa" viewBox="0 0 200 260" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="tallo" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#1b4317"/>
+            <stop offset="50%" stop-color="#38761d"/>
+            <stop offset="100%" stop-color="#133010"/>
+          </linearGradient>
+          <linearGradient id="hoja" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#55a630"/>
+            <stop offset="100%" stop-color="#113809"/>
+          </linearGradient>
+          <linearGradient id="petaloOscuro" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#a4133c"/>
+            <stop offset="100%" stop-color="#590d22"/>
+          </linearGradient>
+          <linearGradient id="petaloPrincipal" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#ff4d6d"/>
+            <stop offset="50%" stop-color="#c9184a"/>
+            <stop offset="100%" stop-color="#800f2f"/>
+          </linearGradient>
+          <linearGradient id="petaloClaro" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#ff8fa3"/>
+            <stop offset="100%" stop-color="#ff4d6d"/>
+          </linearGradient>
+          <linearGradient id="petaloCentro" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#ffb3c1"/>
+            <stop offset="100%" stop-color="#c9184a"/>
+          </linearGradient>
+        </defs>
 
-      <!-- Tallo y Hojas -->
-      <path d="M100,120 C95,160 105,200 100,250" stroke="url(#stem)" stroke-width="6" fill="none" stroke-linecap="round"/>
-      <path d="M97,160 Q90,155 94,150 Q98,155 97,160 Z" fill="#1b4317"/>
-      <path d="M102,190 Q108,185 104,180 Q100,185 102,190 Z" fill="#1b4317"/>
+        <path d="M100,120 C95,160 105,200 100,250" stroke="url(#tallo)" stroke-width="6" fill="none" stroke-linecap="round"/>
+        <g>
+          <path d="M97,175 C60,160 50,185 97,190 Z" fill="url(#hoja)"/>
+          <path d="M97,175 Q75,178 60,185" stroke="#2d6a4f" stroke-width="1" fill="none"/>
+        </g>
+        <g>
+          <path d="M103,195 C140,180 150,205 103,210 Z" fill="url(#hoja)"/>
+          <path d="M103,195 Q125,198 140,205" stroke="#2d6a4f" stroke-width="1" fill="none"/>
+        </g>
+        <path d="M85,115 Q100,135 115,115 Q100,125 85,115 Z" fill="#2d6a4f"/>
 
-      <g>
-        <path d="M97,175 C60,160 50,185 97,190 Z" fill="url(#leaf)"/>
-        <path d="M97,175 Q75,178 60,185" stroke="#2d6a4f" stroke-width="1" fill="none"/>
-      </g>
-      <g>
-        <path d="M103,195 C140,180 150,205 103,210 Z" fill="url(#leaf)"/>
-        <path d="M103,195 Q125,198 140,205" stroke="#2d6a4f" stroke-width="1" fill="none"/>
-      </g>
+        <path d="M50,85 C40,40 80,30 100,55 C120,30 160,40 150,85 C135,125 65,125 50,85 Z" fill="url(#petaloOscuro)"/>
+        <path d="M58,80 C50,45 85,35 100,60 C115,35 150,45 142,80 C130,115 70,115 58,80 Z" fill="url(#petaloPrincipal)"/>
+        <path d="M68,75 C65,50 90,45 100,65 C110,45 135,50 132,75 C125,100 75,100 68,75 Z" fill="url(#petaloClaro)"/>
+        <path d="M78,70 C75,52 125,52 122,70 C120,88 80,88 78,70 Z" fill="url(#petaloPrincipal)"/>
+        <path d="M84,66 C82,55 118,55 116,66 C115,78 85,78 84,66 Z" fill="url(#petaloCentro)"/>
+        <path d="M90,63 C88,57 112,57 110,63 C109,71 91,71 90,63 Z" fill="#fff0f3"/>
+      </svg>
+    </div>
 
-      <path d="M85,115 Q100,135 115,115 Q100,125 85,115 Z" fill="#2d6a4f"/>
-
-      <!-- Pétalos -->
-      <path d="M50,85 C40,40 80,30 100,55 C120,30 160,40 150,85 C135,125 65,125 50,85 Z" fill="url(#petalDark)"/>
-      <path d="M58,80 C50,45 85,35 100,60 C115,35 150,45 142,80 C130,115 70,115 58,80 Z" fill="url(#petalMain)"/>
-      <path d="M68,75 C65,50 90,45 100,65 C110,45 135,50 132,75 C125,100 75,100 68,75 Z" fill="url(#petalLight)"/>
-      <path d="M78,70 C75,52 125,52 122,70 C120,88 80,88 78,70 Z" fill="url(#petalMain)"/>
-      <path d="M84,66 C82,55 118,55 116,66 C115,78 85,78 84,66 Z" fill="url(#petalCenter)"/>
-      <path d="M90,63 C88,57 112,57 110,63 C109,71 91,71 90,63 Z" fill="#fff0f3"/>
-    </svg>
+    <div class="caja-carta" id="caja-carta">
+      <h3>Para ti, Noemi 💌</h3>
+      <p>Esta app la hice con muchísimo cariño para ti. Espero que te guste mucho uwu. Gracias realmente por todos los momentos tan bonitos que hemos compartido, por cada risa y por hacer que todo sea más especial. Eres una persona maravillosa... ¡nunca lo olvides! ✨</p>
+    </div>
   </div>
 
-  <!-- Mensaje interactivo -->
-  <div class="message-box" id="message">
-    🌹 "Bienvenida a tu lugar especial. Haz clic abajo para descubrir la magia."
-  </div>
-
-  <!-- Único botón "APLASTALO" -->
-  <div class="controls">
-    <button class="btn-action" id="btnPlay">
-      ✨ APLASTALO
+  <div class="controles" id="contenedor-controles">
+    <button class="boton-carta" id="boton-carta">
+      💌 Abrir cartita
     </button>
   </div>
 
-  <!-- 🎵 AQUÍ EDITAS TU MÚSICA: Pon la ruta/nombre de tu archivo .mp3 en el src="" -->
-  <audio id="bgMusic" loop src="audios/musica.mp3"></audio>
+  <audio id="musica-fondo" loop src="audios/musica.mp3"></audio>
 
   <script>
-    const btnPlay = document.getElementById('btnPlay');
-    const bgMusic = document.getElementById('bgMusic');
-    const message = document.getElementById('message');
+    const pantallaBienvenida = document.getElementById('pantalla-bienvenida');
+    const encabezadoPrincipal = document.getElementById('encabezado-principal');
+    const contenedorFlor = document.getElementById('contenedor-flor');
+    const contenedorControles = document.getElementById('contenedor-controles');
+    const botonCarta = document.getElementById('boton-carta');
+    const cajaCarta = document.getElementById('caja-carta');
+    const musicaFondo = document.getElementById('musica-fondo');
 
-    const mensajes = [
-      " 'Bienvenida a tu lugar especial.. Espero que saque una sonrisa en tu rostro!'",
-      " 'Eres una persona increíble, nunca dejes de brillar.'",
-      " 'Disfruta  de este pequeño rincón preparado para ti.'",
-      " 'Un detalle único para alguien totalmente única.'"
-    ];
+    let cartaAbierta = false;
 
-    let indiceMensaje = 0;
-    let sonando = false;
-
-    btnPlay.addEventListener('click', () => {
-      if (!sonando) {
-        bgMusic.play().catch(e => console.log("Asegúrate de colocar tu archivo .mp3 correcto en el src de audio."));
-        sonando = true;
-        btnPlay.innerHTML = "⏸ PAUSAR MÚSICA";
-        btnPlay.style.background = "linear-gradient(135deg, #11998e, #38ef7d)";
-      } else {
-        bgMusic.pause();
-        sonando = false;
-        btnPlay.innerHTML = "✨ APLASTALO";
-        btnPlay.style.background = "linear-gradient(135deg, #ff2a5f, #ff647c)";
-      }
-
-      indiceMensaje = (indiceMensaje + 1) % mensajes.length;
-      message.style.opacity = 0;
+    pantallaBienvenida.addEventListener('click', () => {
+      pantallaBienvenida.style.opacity = 0;
       setTimeout(() => {
-        message.innerText = mensajes[indiceMensaje];
-        message.style.opacity = 1;
-      }, 300);
+        pantallaBienvenida.style.display = 'none';
+      }, 800);
+
+      musicaFondo.play().catch(e => console.log(e));
+
+      encabezadoPrincipal.classList.add('mostrar');
+      contenedorFlor.classList.add('mostrar');
+      contenedorControles.classList.add('mostrar');
+    });
+
+    botonCarta.addEventListener('click', () => {
+      cartaAbierta = !cartaAbierta;
+      if (cartaAbierta) {
+        cajaCarta.classList.add('mostrar');
+        botonCarta.innerHTML = "💌 Cerrar cartita";
+        botonCarta.style.background = "linear-gradient(135deg, #11998e, #38ef7d)";
+      } else {
+        cajaCarta.classList.remove('mostrar');
+        botonCarta.innerHTML = "💌 Abrir cartita";
+        botonCarta.style.background = "linear-gradient(135deg, #ff2a5f, #ff647c)";
+      }
     });
   </script>
 </body>
