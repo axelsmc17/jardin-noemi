@@ -1,0 +1,7 @@
+{
+  "NOEMI-2026": { "nombre": "🌹 Rosa de Bienvenida", "archivoHtml": "flores/bienvenida.html" },
+  "FLORAMARILLA": { "nombre": "💛 Flor Amarilla Especial", "archivoHtml": "flores/flor_amariya.html" }
+}
+```[cite: 3]
+
+De esta forma, tu app de Flutter leerá ese `flores.json` automáticamente cada vez que Noemi abra la aplicación y podrá descargar cualquier flor nueva que agregues en el futuro sin que tengas que tocar el código de Dart ni reinstalarle nada[cite: 3].
