@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nenúfar Mágico</title>
+
     <style>
         body,
         html {
@@ -15,9 +16,9 @@
             overflow: hidden;
             background-color: #050b14;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            touch-action: manipulation;
         }
 
-        /* Frase superior */
         #frase-header {
             position: absolute;
             top: 20px;
@@ -33,19 +34,19 @@
             box-sizing: border-box;
         }
 
-        /* Fondo de noche y agua */
         .escena {
             position: relative;
             width: 100%;
             height: 100vh;
+            height: 100dvh;
             background: linear-gradient(to bottom, #02010a, #0b1d3a);
             display: flex;
             justify-content: center;
             align-items: center;
             cursor: pointer;
+            touch-action: manipulation;
         }
 
-        /* Luna llena y reflejo */
         .luna {
             position: absolute;
             top: 60px;
@@ -67,7 +68,6 @@
             filter: blur(5px);
         }
 
-        /* Partículas amarillas */
         .particula {
             position: absolute;
             background-color: #ffd700;
@@ -93,7 +93,6 @@
             }
         }
 
-        /* Nenúfar y flor */
         .estanque-container {
             position: relative;
             width: 300px;
@@ -109,8 +108,16 @@
             height: 180px;
             background: #1b4332;
             border-radius: 50% 50% 45% 50%;
-            box-shadow: inset 0 0 15px #081c15, 0 5px 15px rgba(0, 0, 0, 0.5);
-            clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%, 45% 50%);
+            box-shadow:
+                inset 0 0 15px #081c15,
+                0 5px 15px rgba(0, 0, 0, 0.5);
+            clip-path: polygon(
+                0% 0%,
+                100% 0%,
+                100% 100%,
+                0% 100%,
+                45% 50%
+            );
         }
 
         .flor {
@@ -145,7 +152,6 @@
             transition: all 2s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        /* Posición inicial cerrada (los pétalos se amontonan hacia el centro) */
         .p1 {
             transform: rotate(0deg) scale(0.6);
         }
@@ -178,7 +184,6 @@
             transform: rotate(315deg) scale(0.6);
         }
 
-        /* Estado abierto al tocar la pantalla */
         .abierta .flor {
             transform: scale(1.3);
         }
@@ -214,21 +219,66 @@
         .abierta .p8 {
             transform: rotate(315deg) translateY(-22px) scaleY(1.1);
         }
+
+        @media (max-width: 600px) {
+            #frase-header {
+                top: 16px;
+                font-size: 0.95rem;
+                line-height: 1.4;
+                padding: 0 20px;
+            }
+
+            .luna {
+                top: 75px;
+                right: 35px;
+                width: 55px;
+                height: 55px;
+                box-shadow: 0 0 20px 6px rgba(255, 255, 255, 0.4);
+            }
+
+            .reflejo-agua {
+                top: 145px;
+                width: 90px;
+            }
+
+            .estanque-container {
+                transform: scale(0.85);
+            }
+        }
+
+        @media (max-height: 650px) {
+            .estanque-container {
+                transform: scale(0.75);
+            }
+
+            #frase-header {
+                top: 10px;
+                font-size: 0.9rem;
+            }
+        }
     </style>
 </head>
 
 <body>
 
-    <div id="frase-header">ni en las noches mas oscuras dejo de pensar en ti mimi negrita beya &lt;3</div>
+    <div id="frase-header">
+        ni en las noches mas oscuras dejo de pensar en ti mimi negrita beya &lt;3
+    </div>
 
     <div class="escena" id="escena">
+
         <div class="luna"></div>
+
         <div class="reflejo-agua"></div>
 
         <div class="estanque-container" id="estanque">
+
             <div class="hoja-nenufar"></div>
+
             <div class="flor" id="florNenufar">
+
                 <div class="centro-flor"></div>
+
                 <div class="petalo p1"></div>
                 <div class="petalo p2"></div>
                 <div class="petalo p3"></div>
@@ -237,51 +287,107 @@
                 <div class="petalo p6"></div>
                 <div class="petalo p7"></div>
                 <div class="petalo p8"></div>
+
             </div>
+
         </div>
+
     </div>
 
-    <audio id="audioAmor" src="audios/amor_completo.mp3" preload="auto"></audio>
+    <audio
+        id="audioAmor"
+        src="audios/amor_completo.mp3"
+        preload="auto"
+        loop>
+    </audio>
 
     <script>
         const escena = document.getElementById('escena');
         const estanque = document.getElementById('estanque');
-        const audio = document.getElementById('audioAmor');
+        const audioAmor = document.getElementById('audioAmor');
+
         let abierto = false;
+        let audioIniciado = false;
 
         function crearParticulas() {
             for (let i = 0; i < 25; i++) {
                 const particula = document.createElement('div');
+
                 particula.classList.add('particula');
 
-                particula.style.left = Math.random() * window.innerWidth + 'px';
-                particula.style.top = (window.innerHeight * 0.5 + Math.random() * (window.innerHeight * 0.5)) + 'px';
+                particula.style.left =
+                    Math.random() * window.innerWidth + 'px';
 
-                const size = Math.random() * 6 + 3;
-                particula.style.width = size + 'px';
-                particula.style.height = size + 'px';
-                particula.style.animationDuration = (Math.random() * 3 + 2) + 's';
-                particula.style.animationDelay = (Math.random() * 2) + 's';
+                particula.style.top =
+                    (
+                        window.innerHeight * 0.5 +
+                        Math.random() * (window.innerHeight * 0.5)
+                    ) + 'px';
+
+                const tamano = Math.random() * 6 + 3;
+
+                particula.style.width = tamano + 'px';
+                particula.style.height = tamano + 'px';
+
+                particula.style.animationDuration =
+                    (Math.random() * 3 + 2) + 's';
+
+                particula.style.animationDelay =
+                    (Math.random() * 2) + 's';
 
                 document.body.appendChild(particula);
             }
         }
 
-        crearParticulas();
+        function iniciarMusica() {
+            if (audioIniciado) return;
 
-        escena.addEventListener('click', () => {
+            audioAmor.play()
+                .then(() => {
+                    audioIniciado = true;
+                })
+                .catch(error => {
+                    console.log(
+                        'El navegador bloqueó el audio:',
+                        error
+                    );
+                });
+        }
+
+        function interactuar() {
             if (!abierto) {
                 estanque.classList.add('abierta');
-                audio.play().catch(error => console.log("Reproducción de audio bloqueada por el navegador:", error));
+                iniciarMusica();
                 abierto = true;
             } else {
                 estanque.classList.remove('abierta');
-                audio.pause();
-                audio.currentTime = 0;
+
+                audioAmor.pause();
+                audioAmor.currentTime = 0;
+
+                audioIniciado = false;
                 abierto = false;
             }
-        });
+        }
+
+        crearParticulas();
+
+        escena.addEventListener(
+            'pointerdown',
+            interactuar,
+            { passive: true }
+        );
+
+        document.addEventListener(
+            'visibilitychange',
+            () => {
+                if (document.hidden && !audioAmor.paused) {
+                    audioAmor.pause();
+                }
+            }
+        );
     </script>
+
 </body>
 
 </html>
