@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>27/09 rosones jaja
+    </title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: #050304;
+            touch-action: none;
+        }
+
+        body {
+            font-family: "Comic Sans MS", cursive;
+            color: white;
+        }
+
+        canvas {
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .titulo {
+            position: fixed;
+            top: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            text-align: center;
+            color: #ffe4b5;
+            font-size: clamp(18px, 5vw, 27px);
+            text-shadow: 0 0 15px rgba(255, 130, 150, .4);
+            pointer-events: none;
+        }
+
+        .contador {
+            position: fixed;
+            top: 67px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            text-align: center;
+            color: #e7b9c4;
+            font-size: clamp(13px, 3.7vw, 17px);
+            pointer-events: none;
+        }
+
+        .razon {
+            position: fixed;
+            left: 50%;
+            bottom: 105px;
+            transform: translateX(-50%);
+            width: 88%;
+            min-height: 55px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: #ffe5c9;
+            font-size: clamp(16px, 4.2vw, 22px);
+            line-height: 1.35;
+            text-shadow: 0 0 12px rgba(255, 130, 150, .5);
+            opacity: 0;
+            transition: opacity .5s ease;
+            pointer-events: none;
+        }
+
+        .razon.visible {
+            opacity: 1;
+        }
+
+        .instruccion {
+            position: fixed;
+            bottom: 73px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(255, 255, 255, .4);
+            font-size: 12px;
+            pointer-events: none;
+        }
+
+        .boton {
+            position: fixed;
+            bottom: 23px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 9px 19px;
+            border: 1px solid rgba(255, 190, 160, .4);
+            border-radius: 25px;
+            background: rgba(255, 150, 150, .07);
+            color: #ffd8c7;
+            font-family: inherit;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .boton:active {
+            transform: translateX(-50%) scale(.94);
+        }
+    </style>
+</head>
+
+<body>
+
+    <canvas id="lienzo"></canvas>
+
+    <div class="titulo">
+        una rosa para ti
+    </div>
+
+    <div class="contador" id="contador">
+        Razones por las que pienso en ti: 0
+    </div>
+
+    <div class="razon" id="razon"></div>
+
+    <div class="instruccion">
+        toca la flor
+    </div>
+
+    <button class="boton" id="reiniciar">
+        reiniciar rosa xd?
+    </button>
+
+    <audio id="musica" src="../audios/melancolía.mp3" loop></audio>
+
+    <script>
+        const lienzo = document.getElementById("lienzo");
+        const contexto = lienzo.getContext("2d");
+
+        const contador = document.getElementById("contador");
+        const razon = document.getElementById("razon");
+        const reiniciar = document.getElementById("reiniciar");
+        const musica = document.getElementById("musica");
+
+        let ancho;
+        let alto;
+        let centroX;
+        let centroY;
+        let escala;
+
+        let petalos = [];
+        let petalosCaidos = [];
+        let particulas = [];
+
+        let razonesMostradas = 0;
+        let rosaTerminada = false;
+        let tiempo = 0;
+
+        const razones = [
+            "porque me acuerdo de tu sonrisa de la nada xd",
+            "porque hay canciones q me hacen pensar en ti",
+            "porque aveces veo algo y pienso q te gustaria",
+            "porque me acuerdo de nuestras conversaciones",
+            "porque tu forma de ser se me queda en la cabeza",
+            "porque hay lugares q me recuerdan a ti",
+            "porque me acuerdo de las cosas pequeñas q haces",
+            "porque aveces me pregunto q estaras haciendo",
+            "porque hasta una flor me hizo pensar en ti xd",
+            "porque nose, simplemente pienso en ti"
+        ];
+
+        const coloresPetalos = [
+            ["#ff7895", "#a91643"],
+            ["#ff5e82", "#8d1239"],
+            ["#ff8ba2", "#b71948"],
+            ["#e94a72", "#7d1233"],
+            ["#ff6b8c", "#a71342"],
+            ["#d93667", "#70102f"],
+            ["#ff86a0", "#99143d"],
+            ["#ed557b", "#76102f"],
+            ["#ff7593", "#a11440"],
+            ["#dc3f6b", "#74102e"]
+        ];
+
+        function ajustarLienzo() {
+            const pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
+
+            ancho = window.innerWidth;
+            alto = window.innerHeight;
+
+            lienzo.width = ancho * pixelRatio;
+            lienzo.height = alto * pixelRatio;
+
+            lienzo.style.width = ancho + "px";
+            lienzo.style.height = alto + "px";
+
+            contexto.setTransform(
+                pixelRatio,
+                0,
+                0,
+                pixelRatio,
+                0,
+                0
+            );
+
+            centroX = ancho / 2;
+            centroY = alto / 2 + 15;
+
+            escala = Math.min(ancho, alto) / 430;
+        }
+
+        function crearPetalos() {
+            petalos = [];
+            petalosCaidos = [];
+            particulas = [];
+
+            razonesMostradas = 0;
+            rosaTerminada = false;
+            tiempo = 0;
+
+            razon.textContent = "";
+            razon.classList.remove("visible");
+
+            contador.textContent =
+                "Razones por las que pienso en ti: 0";
+
+            for (let i = 0; i < 10; i++) {
+                petalos.push({
+                    angulo: (Math.PI * 2 / 10) * i - Math.PI / 2,
+                    caido: false,
+                    color: coloresPetalos[i],
+                    tamaño: .9 + Math.random() * .12
+                });
+            }
+        }
+
+        function dibujarFondo() {
+            contexto.clearRect(0, 0, ancho, alto);
+
+            const fondo = contexto.createRadialGradient(
+                centroX,
+                centroY,
+                10,
+                centroX,
+                centroY,
+                Math.max(ancho, alto) * .7
+            );
+
+            fondo.addColorStop(0, "#18090e");
+            fondo.addColorStop(.45, "#090407");
+            fondo.addColorStop(1, "#020203");
+
+            contexto.fillStyle = fondo;
+            contexto.fillRect(0, 0, ancho, alto);
+
+            for (let i = 0; i < 30; i++) {
+                const x = (i * 113) % ancho;
+                const y = (i * 181) % alto;
+
+                const brillo =
+                    .12 + Math.sin(tiempo + i) * .07;
+
+                contexto.beginPath();
+                contexto.arc(x, y, 1, 0, Math.PI * 2);
+
+                contexto.fillStyle =
+                    `rgba(255,180,190,${brillo})`;
+
+                contexto.fill();
+            }
+        }
+
+        function dibujarTallo() {
+            contexto.save();
+
+            contexto.beginPath();
+
+            contexto.moveTo(
+                centroX,
+                centroY + 30 * escala
+            );
+
+            contexto.bezierCurveTo(
+                centroX - 8 * escala,
+                centroY + 100 * escala,
+                centroX + 12 * escala,
+                centroY + 185 * escala,
+                centroX - 8 * escala,
+                centroY + 275 * escala
+            );
+
+            contexto.strokeStyle = "#36592d";
+            contexto.lineWidth = 7 * escala;
+            contexto.lineCap = "round";
+            contexto.stroke();
+
+            contexto.beginPath();
+
+            contexto.ellipse(
+                centroX - 63 * escala,
+                centroY + 170 * escala,
+                43 * escala,
+                16 * escala,
+                -.35,
+                0,
+                Math.PI * 2
+            );
+
+            contexto.fillStyle = "#416c35";
+            contexto.fill();
+
+            contexto.restore();
+        }
+
+        function dibujarPetalo(petalo) {
+            if (petalo.caido) {
+                return;
+            }
+
+            const radio = 62 * escala;
+
+            const x =
+                centroX +
+                Math.cos(petalo.angulo) * radio;
+
+            const y =
+                centroY +
+                Math.sin(petalo.angulo) * radio;
+
+            const largo =
+                125 * escala * petalo.tamaño;
+
+            const anchoPetalo =
+                55 * escala * petalo.tamaño;
+
+            contexto.save();
+
+            contexto.translate(x, y);
+
+            contexto.rotate(
+                petalo.angulo + Math.PI / 2
+            );
+
+            const degradado =
+                contexto.createLinearGradient(
+                    0,
+                    -largo / 2,
+                    0,
+                    largo / 2
+                );
+
+            degradado.addColorStop(
+                0,
+                petalo.color[0]
+            );
+
+            degradado.addColorStop(
+                .55,
+                petalo.color[0]
+            );
+
+            degradado.addColorStop(
+                1,
+                petalo.color[1]
+            );
+
+            contexto.fillStyle = degradado;
+
+            contexto.shadowColor =
+                "rgba(255,70,110,.45)";
+
+            contexto.shadowBlur = 17;
+
+            contexto.beginPath();
+
+            contexto.moveTo(
+                0,
+                -largo / 2
+            );
+
+            contexto.bezierCurveTo(
+                anchoPetalo,
+                -largo * .28,
+                anchoPetalo * 1.1,
+                largo * .2,
+                0,
+                largo / 2
+            );
+
+            contexto.bezierCurveTo(
+                -anchoPetalo * 1.1,
+                largo * .2,
+                -anchoPetalo,
+                -largo * .28,
+                0,
+                -largo / 2
+            );
+
+            contexto.closePath();
+            contexto.fill();
+
+            contexto.restore();
+        }
+
+        function dibujarCentro() {
+            if (rosaTerminada) {
+                dibujarCorazon();
+                return;
+            }
+
+            const radio = 34 * escala;
+
+            const degradado =
+                contexto.createRadialGradient(
+                    centroX - radio * .3,
+                    centroY - radio * .35,
+                    2,
+                    centroX,
+                    centroY,
+                    radio
+                );
+
+            degradado.addColorStop(
+                0,
+                "#f8d69a"
+            );
+
+            degradado.addColorStop(
+                .45,
+                "#c6813a"
+            );
+
+            degradado.addColorStop(
+                1,
+                "#703519"
+            );
+
+            contexto.save();
+
+            contexto.fillStyle = degradado;
+
+            contexto.shadowColor =
+                "rgba(255,160,80,.55)";
+
+            contexto.shadowBlur = 20;
+
+            contexto.beginPath();
+
+            contexto.arc(
+                centroX,
+                centroY,
+                radio,
+                0,
+                Math.PI * 2
+            );
+
+            contexto.fill();
+
+            contexto.restore();
+        }
+
+        function dibujarCorazon() {
+            const latido =
+                1 + Math.sin(tiempo * 3) * .045;
+
+            const tamaño =
+                57 * escala * latido;
+
+            contexto.save();
+
+            contexto.translate(
+                centroX,
+                centroY
+            );
+
+            contexto.scale(
+                latido,
+                latido
+            );
+
+            contexto.fillStyle = "#ffd83d";
+
+            contexto.shadowColor =
+                "rgba(255,210,50,.9)";
+
+            contexto.shadowBlur = 32;
+
+            contexto.beginPath();
+
+            contexto.moveTo(
+                0,
+                tamaño * .85
+            );
+
+            contexto.bezierCurveTo(
+                -tamaño * 1.15,
+                tamaño * .05,
+                -tamaño * .95,
+                -tamaño * .9,
+                -tamaño * .42,
+                -tamaño * .9
+            );
+
+            contexto.bezierCurveTo(
+                -tamaño * .13,
+                -tamaño * .9,
+                0,
+                -tamaño * .62,
+                0,
+                -tamaño * .35
+            );
+
+            contexto.bezierCurveTo(
+                0,
+                -tamaño * .62,
+                tamaño * .13,
+                -tamaño * .9,
+                tamaño * .42,
+                -tamaño * .9
+            );
+
+            contexto.bezierCurveTo(
+                tamaño * .95,
+                -tamaño * .9,
+                tamaño * 1.15,
+                tamaño * .05,
+                0,
+                tamaño * .85
+            );
+
+            contexto.closePath();
+            contexto.fill();
+
+            contexto.shadowBlur = 0;
+
+            contexto.fillStyle = "#684600";
+
+            contexto.font =
+                `bold ${24 * escala}px "Comic Sans MS", cursive`;
+
+            contexto.textAlign = "center";
+            contexto.textBaseline = "middle";
+
+            contexto.fillText(
+                "TQM",
+                0,
+                0
+            );
+
+            contexto.restore();
+        }
+
+        function crearPetaloCaido(petalo) {
+            const radio = 62 * escala;
+
+            petalosCaidos.push({
+                x:
+                    centroX +
+                    Math.cos(petalo.angulo) * radio,
+
+                y:
+                    centroY +
+                    Math.sin(petalo.angulo) * radio,
+
+                velocidadX:
+                    Math.cos(petalo.angulo) *
+                    (1 + Math.random() * 1.5),
+
+                velocidadY:
+                    .8 + Math.random() * 1.4,
+
+                gravedad: .025,
+
+                rotacion:
+                    petalo.angulo + Math.PI / 2,
+
+                velocidadRotacion:
+                    (Math.random() - .5) * .055,
+
+                color: petalo.color,
+
+                tamaño: petalo.tamaño,
+
+                opacidad: 1
+            });
+
+            for (let i = 0; i < 10; i++) {
+                particulas.push({
+                    x:
+                        centroX +
+                        Math.cos(petalo.angulo) *
+                        radio,
+
+                    y:
+                        centroY +
+                        Math.sin(petalo.angulo) *
+                        radio,
+
+                    velocidadX:
+                        (Math.random() - .5) * 2.5,
+
+                    velocidadY:
+                        (Math.random() - .5) * 2.5,
+
+                    vida: 1
+                });
+            }
+        }
+
+        function dibujarPetaloCaido(petalo) {
+            const largo =
+                125 * escala * petalo.tamaño;
+
+            const anchoPetalo =
+                55 * escala * petalo.tamaño;
+
+            contexto.save();
+
+            contexto.translate(
+                petalo.x,
+                petalo.y
+            );
+
+            contexto.rotate(
+                petalo.rotacion
+            );
+
+            contexto.globalAlpha =
+                petalo.opacidad;
+
+            const degradado =
+                contexto.createLinearGradient(
+                    0,
+                    -largo / 2,
+                    0,
+                    largo / 2
+                );
+
+            degradado.addColorStop(
+                0,
+                petalo.color[0]
+            );
+
+            degradado.addColorStop(
+                1,
+                petalo.color[1]
+            );
+
+            contexto.fillStyle = degradado;
+
+            contexto.beginPath();
+
+            contexto.moveTo(
+                0,
+                -largo / 2
+            );
+
+            contexto.bezierCurveTo(
+                anchoPetalo,
+                -largo * .28,
+                anchoPetalo,
+                largo * .2,
+                0,
+                largo / 2
+            );
+
+            contexto.bezierCurveTo(
+                -anchoPetalo,
+                largo * .2,
+                -anchoPetalo,
+                -largo * .28,
+                0,
+                -largo / 2
+            );
+
+            contexto.closePath();
+            contexto.fill();
+
+            contexto.restore();
+        }
+
+        function actualizarPetalosCaidos() {
+            petalosCaidos.forEach(petalo => {
+                petalo.x += petalo.velocidadX;
+                petalo.y += petalo.velocidadY;
+
+                petalo.velocidadY +=
+                    petalo.gravedad;
+
+                petalo.rotacion +=
+                    petalo.velocidadRotacion;
+
+                petalo.opacidad -= .003;
+            });
+
+            petalosCaidos =
+                petalosCaidos.filter(
+                    petalo =>
+                        petalo.opacidad > 0 &&
+                        petalo.y < alto + 150
+                );
+        }
+
+        function actualizarParticulas() {
+            particulas.forEach(particula => {
+                particula.x +=
+                    particula.velocidadX;
+
+                particula.y +=
+                    particula.velocidadY;
+
+                particula.vida -= .025;
+            });
+
+            particulas =
+                particulas.filter(
+                    particula =>
+                        particula.vida > 0
+                );
+        }
+
+        function dibujarParticulas() {
+            particulas.forEach(particula => {
+                contexto.save();
+
+                contexto.globalAlpha =
+                    particula.vida;
+
+                contexto.fillStyle =
+                    "#ffc3a5";
+
+                contexto.beginPath();
+
+                contexto.arc(
+                    particula.x,
+                    particula.y,
+                    1.5,
+                    0,
+                    Math.PI * 2
+                );
+
+                contexto.fill();
+
+                contexto.restore();
+            });
+        }
+
+        function mostrarRazon(indice) {
+            razon.classList.remove("visible");
+
+            setTimeout(() => {
+                razon.textContent =
+                    razones[indice];
+
+                razon.classList.add("visible");
+            }, 250);
+        }
+
+        function quitarPetalo() {
+            if (rosaTerminada) {
+                return;
+            }
+
+            const disponibles =
+                petalos.filter(
+                    petalo => !petalo.caido
+                );
+
+            if (!disponibles.length) {
+                return;
+            }
+
+            const petalo =
+                disponibles[
+                Math.floor(
+                    Math.random() *
+                    disponibles.length
+                )
+                ];
+
+            const indice =
+                petalos.indexOf(petalo);
+
+            petalo.caido = true;
+
+            crearPetaloCaido(petalo);
+
+            razonesMostradas++;
+
+            contador.textContent =
+                `Razones por las que pienso en ti: ${razonesMostradas}`;
+
+            mostrarRazon(indice);
+
+            if (razonesMostradas === 1) {
+                musica.currentTime = 0;
+
+                musica.play().catch(() => { });
+            }
+
+            if (razonesMostradas === 10) {
+                setTimeout(() => {
+                    rosaTerminada = true;
+
+                    razon.textContent =
+                        "y aun asi me faltan razones xd";
+
+                    razon.classList.add("visible");
+                }, 1800);
+            }
+        }
+
+        function animar() {
+            tiempo += .016;
+
+            dibujarFondo();
+            dibujarTallo();
+
+            petalos.forEach(
+                dibujarPetalo
+            );
+
+            actualizarPetalosCaidos();
+            actualizarParticulas();
+
+            petalosCaidos.forEach(
+                dibujarPetaloCaido
+            );
+
+            dibujarParticulas();
+            dibujarCentro();
+
+            requestAnimationFrame(animar);
+        }
+
+        lienzo.addEventListener(
+            "pointerdown",
+            quitarPetalo
+        );
+
+        reiniciar.addEventListener(
+            "click",
+            evento => {
+                evento.stopPropagation();
+
+                musica.pause();
+                musica.currentTime = 0;
+
+                crearPetalos();
+            }
+        );
+
+        window.addEventListener(
+            "resize",
+            ajustarLienzo
+        );
+
+        ajustarLienzo();
+        crearPetalos();
+        animar();
+    </script>
+
+</body>
+
+</html>
