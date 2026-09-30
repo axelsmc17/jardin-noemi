@@ -21,7 +21,7 @@
     }
     </script>
 
-    <!-- CSS Unificado y Responsivo -->
+    <!-- CSS Corregido para permitir scroll en móvil -->
     <style>
         * {
             margin: 0;
@@ -33,7 +33,7 @@
         body {
             width: 100%;
             height: 100%;
-            overflow: hidden;
+            overflow: hidden; /* Mantiene el fondo fijo y evita barras raras */
             background: #02030a;
             color: white;
             font-family: "Poppins", sans-serif;
@@ -47,6 +47,7 @@
             width: 100%;
             height: 100%;
             z-index: 0;
+            pointer-events: none; /* Permite que los toques atraviesen el canvas hacia la tarjeta */
         }
 
         #overlay {
@@ -57,7 +58,8 @@
             justify-content: center;
             align-items: center;
             z-index: 5;
-            padding: 20px;
+            padding: 15px;
+            pointer-events: none; /* Deja que los eventos fluyan */
         }
 
         #welcome {
@@ -66,6 +68,7 @@
             text-align: center;
             transition: 1s ease;
             padding: 0 15px;
+            pointer-events: auto; /* Activa clicks solo en la bienvenida */
         }
 
         #welcome h1 {
@@ -119,42 +122,45 @@
             visibility: hidden;
             transition: 1s ease;
             padding: 15px;
+            pointer-events: none;
         }
 
         .card {
             width: 100%;
-            max-width: 700px;
-            max-height: 85vh;
-            overflow-y: auto;
-            padding: clamp(20px, 5vw, 45px);
-            border-radius: 30px;
-            background: rgba(255, 255, 255, 0.08);
+            max-width: 650px;
+            max-height: 85vh; /* Altura máxima para que quepa en celulares pequeños */
+            overflow-y: auto;  /* ¡Habilita el scroll vertical táctil! */
+            -webkit-overflow-scrolling: touch; /* Scroll suave en iOS/Safari */
+            padding: clamp(20px, 4vw, 40px);
+            border-radius: 25px;
+            background: rgba(10, 12, 24, 0.75); /* Fondo un poco más opaco para leer mejor */
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, .15);
-            box-shadow: 0 0 50px rgba(0, 0, 0, .6);
+            box-shadow: 0 0 50px rgba(0, 0, 0, .7);
             text-align: center;
+            pointer-events: auto; /* Permite hacer scroll y tocar el botón aquí dentro */
         }
 
         .card h2 {
             font-family: "Cormorant Garamond", serif;
-            font-size: clamp(1.8rem, 6vw, 2.8rem);
-            margin-bottom: 20px;
+            font-size: clamp(1.6rem, 5vw, 2.4rem);
+            margin-bottom: 15px;
         }
 
         #letterText {
-            min-height: 180px;
             text-align: left;
             white-space: pre-line;
             font-size: clamp(0.9rem, 3vw, 1.05rem);
-            line-height: 1.8;
+            line-height: 1.7;
             color: #eeeeee;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
         }
 
         .showLetter {
             opacity: 1 !important;
             visibility: visible !important;
+            pointer-events: auto !important;
         }
 
         .hideWelcome {
@@ -185,7 +191,7 @@
         </section>
     </div>
 
-    <!-- JavaScript Unificado -->
+    <!-- JavaScript -->
     <script type="module">
         import * as THREE from "three";
 
@@ -217,7 +223,7 @@
         scene.add(flowerLight);
 
         const starsGeometry = new THREE.BufferGeometry();
-        const starsCount = window.innerWidth < 768 ? 1500 : 4000; // Reducir estrellas en celular para que vaya más fluido
+        const starsCount = window.innerWidth < 768 ? 1200 : 4000;
         const stars = [];
 
         for (let i = 0; i < starsCount; i++) {
@@ -283,7 +289,6 @@
 
         const mouse = { x: 0, y: 0 };
 
-        // Soporte tanto para mouse como para movimiento táctil en celular
         window.addEventListener("mousemove", (event) => {
             mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
             mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
@@ -297,6 +302,7 @@
         }, { passive: true });
 
         const startButton = document.querySelector("#startButton");
+        const finishButton = document.querySelector("#finishButton");
         const welcome = document.querySelector("#welcome");
         const letterBox = document.querySelector("#letterBox");
         const letterText = document.querySelector("#letterText");
@@ -324,7 +330,7 @@ Te deseo muchos éxitos en este camino tkm 🌻✨`;
             if (letterIndex < message.length) {
                 letterText.textContent += message[letterIndex];
                 letterIndex++;
-                setTimeout(writeLetter, 45);
+                setTimeout(writeLetter, 40);
             }
         }
 
@@ -342,8 +348,12 @@ Te deseo muchos éxitos en este camino tkm 🌻✨`;
             setTimeout(() => {
                 welcome.style.display = "none";
                 letterBox.classList.add("showLetter");
-                setTimeout(writeLetter, 700);
-            }, 1200);
+                setTimeout(writeLetter, 600);
+            }, 1000);
+        });
+
+        finishButton.addEventListener("click", () => {
+            alert("¡Espero que te haya gustado mucho! 🌻✨");
         });
 
         function animate() {
