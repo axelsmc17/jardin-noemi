@@ -3,15 +3,13 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Para Noemy owo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Para Noemy owo 🌻</title>
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=Poppins:wght@300;400;600&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 
     <!-- Three.js Import Shim & Map -->
     <script async src="https://unpkg.com/es-module-shims@1.10.0/dist/es-module-shims.js"></script>
@@ -23,7 +21,7 @@
     }
     </script>
 
-    <!-- CSS Unificado -->
+    <!-- CSS Unificado y Responsivo -->
     <style>
         * {
             margin: 0;
@@ -39,6 +37,7 @@
             background: #02030a;
             color: white;
             font-family: "Poppins", sans-serif;
+            -webkit-text-size-adjust: 100%;
         }
 
         #bg {
@@ -58,36 +57,38 @@
             justify-content: center;
             align-items: center;
             z-index: 5;
+            padding: 20px;
         }
 
         #welcome {
-            width: 90%;
-            max-width: 800px;
+            width: 100%;
+            max-width: 700px;
             text-align: center;
             transition: 1s ease;
+            padding: 0 15px;
         }
 
         #welcome h1 {
             font-family: "Cormorant Garamond", serif;
-            font-size: 4.5rem;
+            font-size: clamp(2.2rem, 8vw, 4.5rem);
             font-weight: 600;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
             text-shadow: 0 0 25px rgba(255, 255, 255, .35);
         }
 
         #welcome p {
-            max-width: 600px;
+            max-width: 550px;
             margin: auto;
-            margin-bottom: 40px;
-            font-size: 1.15rem;
-            line-height: 1.8;
+            margin-bottom: 30px;
+            font-size: clamp(0.95rem, 3.5vw, 1.15rem);
+            line-height: 1.6;
             color: #dddddd;
         }
 
         button {
             border: none;
             cursor: pointer;
-            padding: 16px 45px;
+            padding: 14px 35px;
             border-radius: 50px;
             color: white;
             font-size: 1rem;
@@ -95,6 +96,7 @@
             background: linear-gradient(135deg, #ffd54f, #ff9800);
             box-shadow: 0 0 35px rgba(255, 190, 0, .45);
             transition: .35s;
+            -webkit-tap-highlight-color: transparent;
         }
 
         button:hover {
@@ -116,32 +118,38 @@
             opacity: 0;
             visibility: hidden;
             transition: 1s ease;
+            padding: 15px;
         }
 
         .card {
-            width: min(750px, 90%);
-            padding: 50px;
-            border-radius: 35px;
-            background: rgba(255, 255, 255, .08);
+            width: 100%;
+            max-width: 700px;
+            max-height: 85vh;
+            overflow-y: auto;
+            padding: clamp(20px, 5vw, 45px);
+            border-radius: 30px;
+            background: rgba(255, 255, 255, 0.08);
             backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, .15);
-            box-shadow: 0 0 60px rgba(0, 0, 0, .5);
+            box-shadow: 0 0 50px rgba(0, 0, 0, .6);
             text-align: center;
         }
 
         .card h2 {
             font-family: "Cormorant Garamond", serif;
-            font-size: 3.2rem;
-            margin-bottom: 30px;
+            font-size: clamp(1.8rem, 6vw, 2.8rem);
+            margin-bottom: 20px;
         }
 
         #letterText {
-            min-height: 260px;
+            min-height: 180px;
             text-align: left;
             white-space: pre-line;
-            font-size: 1.05rem;
-            line-height: 2;
+            font-size: clamp(0.9rem, 3vw, 1.05rem);
+            line-height: 1.8;
             color: #eeeeee;
+            margin-bottom: 20px;
         }
 
         .showLetter {
@@ -152,28 +160,7 @@
         .hideWelcome {
             opacity: 0;
             transform: translateY(-50px);
-        }
-
-        @media(max-width:700px) {
-            #welcome h1 {
-                font-size: 2.8rem;
-            }
-
-            #welcome p {
-                font-size: .95rem;
-            }
-
-            .card {
-                padding: 30px;
-            }
-
-            .card h2 {
-                font-size: 2.2rem;
-            }
-
-            #letterText {
-                font-size: .95rem;
-            }
+            pointer-events: none;
         }
     </style>
 </head>
@@ -220,7 +207,7 @@
             alpha: true
         });
         renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
         const light = new THREE.AmbientLight(0xffffff, 1.5);
         scene.add(light);
@@ -230,7 +217,7 @@
         scene.add(flowerLight);
 
         const starsGeometry = new THREE.BufferGeometry();
-        const starsCount = 4000;
+        const starsCount = window.innerWidth < 768 ? 1500 : 4000; // Reducir estrellas en celular para que vaya más fluido
         const stars = [];
 
         for (let i = 0; i < starsCount; i++) {
@@ -296,10 +283,18 @@
 
         const mouse = { x: 0, y: 0 };
 
+        // Soporte tanto para mouse como para movimiento táctil en celular
         window.addEventListener("mousemove", (event) => {
             mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
             mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
         });
+
+        window.addEventListener("touchmove", (event) => {
+            if (event.touches.length > 0) {
+                mouse.x = (event.touches[0].clientX / window.innerWidth) * 2 - 1;
+                mouse.y = -(event.touches[0].clientY / window.innerHeight) * 2 + 1;
+            }
+        }, { passive: true });
 
         const startButton = document.querySelector("#startButton");
         const welcome = document.querySelector("#welcome");
