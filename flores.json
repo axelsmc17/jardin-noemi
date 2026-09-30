@@ -1,21 +1,22 @@
 {
-  "NOEMI-2026": {
-    "nombre": "🌹 Rosa de Bienvenida",
-    "archivoHtml": "flores/bienvenida.html"
-  },
-  "FLOR-J43V": {
-    "nombre": "💛 Flor Amarilla Especial",
-    "archivoHtml": "flores/flor_amariya.html"
-  },
-  "NENUFAR-LUNAR": {
-    "nombre": "✨ Nenufar Especial",
-    "archivoHtml": "flores/rosa_recuerdos.html"
-  },
-  "YA-COMIO?": {
-    "nombre": "🌷 MI TOP 10<3",
-    "archivoHtml": "flores/tulipan.html"
-  },
-   "MAETA-UWU": {
-    "nombre": "🌻 Para Una Gran Maeta ^^",
-    "archivoHtml": "flores/girasol.html"
+    "NOEMI-2026": {
+        "nombre": "🌷 Rosa de Bienvenida",
+        "archivoHtml": "flores/bienvenida.html"
+    },
+    "FLOR-J43V": {
+        "nombre": "💛 Flor Amarilla Especial",
+        "archivoHtml": "flores/flor_amariya.html"
+    },
+    "NENUFAR-LUNAR": {
+        "nombre": "✨ Nenufar Especial",
+        "archivoHtml": "flores/rosa_recuerdos.html"
+    },
+    "¿YA-COMIO?": {
+        "nombre": "🌷 MI TOP 10<3",
+        "archivoHtml": "flores/tulipan.html"
+    },
+    "MAETA-UWU": {
+        "nombre": "🌻 Para Una Gran Maeta ^^",
+        "archivoHtml": "flores/girasol.html"
+    }
 }
