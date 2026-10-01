@@ -130,6 +130,9 @@
         </div>
     </div>
 
+    <!-- Audio oculto (sale de la carpeta 'flores' con '../' y entra a 'audios/amor.mp3') -->
+    <audio id="audioFondo" src="../audios/amor.mp3" loop preload="auto"></audio>
+
     <div class="fixed inset-0 flex flex-col justify-between p-4 sm:p-6 z-20 pointer-events-none">
         <header class="text-center pointer-events-auto">
             <h1 class="fuente-romantica text-5xl sm:text-6xl text-rose-300 drop-shadow-[0_2px_12px_rgba(244,63,94,0.6)]">
@@ -142,13 +145,9 @@
 
         <div id="contenedorMensajes" class="fixed inset-0 pointer-events-none overflow-hidden z-40"></div>
 
-        <div class="flex justify-center pointer-events-auto z-50 mb-2">
-            <audio id="audioFondo" controls src="../audios/musica30.mp3" loop preload="auto" class="opacity-80 hover:opacity-100 transition-opacity h-10 w-64 max-w-full rounded-lg shadow-lg"></audio>
-        </div>
-
         <footer class="text-center pointer-events-auto">
             <p class="text-[10px] sm:text-xs text-rose-300/60 tracking-widest uppercase">
-                Toca la pantalla o dale Play al reproductor 🎵
+                Toca cualquier florecita para activar la magia 🎵
             </p>
         </footer>
     </div>
@@ -390,9 +389,9 @@
         }
 
         function intentarReproducirAudio() {
-            audioFondo.volume = 0.7;
+            audioFondo.volume = 0.8;
             audioFondo.play().catch(error => {
-                console.log("Reproducción bloqueada o esperando interacción:", error);
+                console.log("Audio en espera de interacción:", error);
             });
         }
 
@@ -401,7 +400,6 @@
             div.className = "mensaje-flotante bg-rose-950/95 backdrop-blur-md border border-rose-400/80 text-rose-100 px-4 py-2.5 rounded-2xl shadow-2xl fuente-romantica text-2xl sm:text-3xl z-50";
             div.textContent = texto;
 
-            // Restringir márgenes horizontales para que jamás rebase la pantalla del celular
             const margenH = 120;
             const posX = Math.max(margenH, Math.min(window.innerWidth - margenH, x));
             const posY = Math.max(90, Math.min(window.innerHeight - 100, y - 30));
