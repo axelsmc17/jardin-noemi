@@ -6,9 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Jardín de Rosas Mágico</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&family=Dancing+Script:wght@700&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
     <style>
         * {
             box-sizing: border-box;
@@ -76,7 +74,6 @@
         }
 
         @keyframes pulso-brillo {
-
             0%,
             100% {
                 filter: drop-shadow(0 0 6px rgba(244, 63, 94, .6));
@@ -88,32 +85,37 @@
         }
 
         .mensaje-flotante {
+            position: absolute;
             animation: aparecer-mensaje 3.2s ease-in-out forwards;
-            max-width: calc(100vw - 30px);
+            max-width: 85vw;
+            width: max-content;
             text-align: center;
-            line-height: 1.2;
-            overflow-wrap: break-word;
+            line-height: 1.25;
+            word-wrap: break-word;
+            white-space: normal;
+            transform: translateX(-50%);
+            pointer-events: none;
         }
 
         @keyframes aparecer-mensaje {
             0% {
                 opacity: 0;
-                transform: translate(-50%, 10px) scale(.85);
+                transform: translateX(-50%) translateY(10px) scale(.85);
             }
 
             15% {
                 opacity: 1;
-                transform: translate(-50%, 0) scale(1.05);
+                transform: translateX(-50%) translateY(0) scale(1.05);
             }
 
             80% {
                 opacity: 1;
-                transform: translate(-50%, -15px) scale(1);
+                transform: translateX(-50%) translateY(-15px) scale(1);
             }
 
             100% {
                 opacity: 0;
-                transform: translate(-50%, -45px) scale(.95);
+                transform: translateX(-50%) translateY(-45px) scale(.95);
             }
         }
     </style>
@@ -124,15 +126,13 @@
     <canvas id="lienzoFondo"></canvas>
 
     <div class="fixed inset-0 bg-gradient-to-b from-indigo-950 via-slate-900 to-black z-0 pointer-events-none">
-        <div
-            class="absolute top-10 right-8 w-20 h-20 sm:w-28 sm:h-28 rounded-full bg-gradient-to-tr from-yellow-100 via-amber-100 to-amber-200 shadow-[0_0_60px_rgba(254,243,199,0.6)] opacity-95">
+        <div class="absolute top-10 right-8 w-20 h-20 sm:w-28 sm:h-28 rounded-full bg-gradient-to-tr from-yellow-100 via-amber-100 to-amber-200 shadow-[0_0_60px_rgba(254,243,199,0.6)] opacity-95">
         </div>
     </div>
 
     <div class="fixed inset-0 flex flex-col justify-between p-4 sm:p-6 z-20 pointer-events-none">
         <header class="text-center pointer-events-auto">
-            <h1
-                class="fuente-romantica text-5xl sm:text-6xl text-rose-300 drop-shadow-[0_2px_12px_rgba(244,63,94,0.6)]">
+            <h1 class="fuente-romantica text-5xl sm:text-6xl text-rose-300 drop-shadow-[0_2px_12px_rgba(244,63,94,0.6)]">
                 Arbusto floral :D
             </h1>
             <p class="text-xs sm:text-sm text-rose-200/80 mt-2 tracking-wide">
@@ -142,11 +142,13 @@
 
         <div id="contenedorMensajes" class="fixed inset-0 pointer-events-none overflow-hidden z-40"></div>
 
-        <audio id="audioFondo" src="../audios/cancion30.mp3" loop preload="auto"></audio>
+        <div class="flex justify-center pointer-events-auto z-50 mb-2">
+            <audio id="audioFondo" controls src="../audios/musica30.mp3" loop preload="auto" class="opacity-80 hover:opacity-100 transition-opacity h-10 w-64 max-w-full rounded-lg shadow-lg"></audio>
+        </div>
 
         <footer class="text-center pointer-events-auto">
             <p class="text-[10px] sm:text-xs text-rose-300/60 tracking-widest uppercase">
-                Toca la pantalla :3
+                Toca la pantalla o dale Play al reproductor 🎵
             </p>
         </footer>
     </div>
@@ -197,7 +199,6 @@
 
         let estrellas = [];
         let particulasDoradas = [];
-        let audioInicializado = false;
 
         const frases = [
             "Te quiero mucho 💗",
@@ -373,7 +374,7 @@
             grupoRosa.addEventListener("pointerdown", evento => {
                 evento.preventDefault();
                 evento.stopPropagation();
-                activarAudio();
+                intentarReproducirAudio();
                 mostrarMensajeRomantico(evento.clientX, evento.clientY, grupoRosa.dataset.mensaje);
                 lanzarParticulasBrillo(evento.clientX, evento.clientY);
             });
@@ -388,22 +389,22 @@
             });
         }
 
-        function activarAudio() {
-            if (audioInicializado) return;
-            audioFondo.volume = 0.6;
-            audioFondo.play().then(() => {
-                audioInicializado = true;
-            }).catch(() => { });
+        function intentarReproducirAudio() {
+            audioFondo.volume = 0.7;
+            audioFondo.play().catch(error => {
+                console.log("Reproducción bloqueada o esperando interacción:", error);
+            });
         }
 
         function mostrarMensajeRomantico(x, y, texto) {
             const div = document.createElement("div");
-            div.className = "absolute mensaje-flotante pointer-events-none bg-rose-950/90 backdrop-blur-md border border-rose-400/80 text-rose-100 px-4 py-2.5 rounded-2xl shadow-2xl fuente-romantica text-2xl sm:text-3xl z-50";
+            div.className = "mensaje-flotante bg-rose-950/95 backdrop-blur-md border border-rose-400/80 text-rose-100 px-4 py-2.5 rounded-2xl shadow-2xl fuente-romantica text-2xl sm:text-3xl z-50";
             div.textContent = texto;
 
-            const margen = 80;
-            const posX = Math.max(margen, Math.min(window.innerWidth - margen, x));
-            const posY = Math.max(80, Math.min(window.innerHeight - 80, y - 25));
+            // Restringir márgenes horizontales para que jamás rebase la pantalla del celular
+            const margenH = 120;
+            const posX = Math.max(margenH, Math.min(window.innerWidth - margenH, x));
+            const posY = Math.max(90, Math.min(window.innerHeight - 100, y - 30));
 
             div.style.left = `${posX}px`;
             div.style.top = `${posY}px`;
@@ -449,7 +450,7 @@
             }
         }
 
-        window.addEventListener("pointerdown", activarAudio, { passive: true });
+        window.addEventListener("pointerdown", intentarReproducirAudio, { passive: true });
         window.addEventListener("resize", () => {
             ajustarDimensiones();
             crearEstrellas();
