@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Jardín de Rosas Mágico</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&family=Dancing+Script:wght@700&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: #030712;
+            touch-action: manipulation;
+        }
+
+        body {
+            font-family: 'Quicksand', sans-serif;
+            color: white;
+            user-select: none;
+        }
+
+        .fuente-romantica {
+            font-family: 'Dancing Script', cursive;
+        }
+
+        canvas {
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .contenedor-arbusto {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        #svgArbusto {
+            pointer-events: auto;
+            touch-action: manipulation;
+            width: 100%;
+            height: 100%;
+            max-width: 900px;
+            max-height: 900px;
+        }
+
+        .flor-rosa {
+            cursor: pointer;
+            transform-box: fill-box;
+            transform-origin: center;
+            animation: pulso-brillo 3.5s ease-in-out infinite;
+        }
+
+        .flor-rosa:active {
+            transform: scale(1.3);
+        }
+
+        @keyframes pulso-brillo {
+
+            0%,
+            100% {
+                filter: drop-shadow(0 0 6px rgba(244, 63, 94, .6));
+            }
+
+            50% {
+                filter: drop-shadow(0 0 16px rgba(251, 113, 133, 1));
+            }
+        }
+
+        .mensaje-flotante {
+            animation: aparecer-mensaje 3.2s ease-in-out forwards;
+            max-width: calc(100vw - 30px);
+            text-align: center;
+            line-height: 1.2;
+            overflow-wrap: break-word;
+        }
+
+        @keyframes aparecer-mensaje {
+            0% {
+                opacity: 0;
+                transform: translate(-50%, 10px) scale(.85);
+            }
+
+            15% {
+                opacity: 1;
+                transform: translate(-50%, 0) scale(1.05);
+            }
+
+            80% {
+                opacity: 1;
+                transform: translate(-50%, -15px) scale(1);
+            }
+
+            100% {
+                opacity: 0;
+                transform: translate(-50%, -45px) scale(.95);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <canvas id="lienzoFondo"></canvas>
+
+    <div class="fixed inset-0 bg-gradient-to-b from-indigo-950 via-slate-900 to-black z-0 pointer-events-none">
+        <div
+            class="absolute top-10 right-8 w-20 h-20 sm:w-28 sm:h-28 rounded-full bg-gradient-to-tr from-yellow-100 via-amber-100 to-amber-200 shadow-[0_0_60px_rgba(254,243,199,0.6)] opacity-95">
+        </div>
+    </div>
+
+    <div class="fixed inset-0 flex flex-col justify-between p-4 sm:p-6 z-20 pointer-events-none">
+        <header class="text-center pointer-events-auto">
+            <h1
+                class="fuente-romantica text-5xl sm:text-6xl text-rose-300 drop-shadow-[0_2px_12px_rgba(244,63,94,0.6)]">
+                Arbusto floral :D
+            </h1>
+            <p class="text-xs sm:text-sm text-rose-200/80 mt-2 tracking-wide">
+                Toca las florecitas mimi 💗
+            </p>
+        </header>
+
+        <div id="contenedorMensajes" class="fixed inset-0 pointer-events-none overflow-hidden z-40"></div>
+
+        <audio id="audioFondo" src="../audios/cancion30.mp3" loop preload="auto"></audio>
+
+        <footer class="text-center pointer-events-auto">
+            <p class="text-[10px] sm:text-xs text-rose-300/60 tracking-widest uppercase">
+                Toca la pantalla :3
+            </p>
+        </footer>
+    </div>
+
+    <div class="contenedor-arbusto">
+        <svg viewBox="0 0 800 800" id="svgArbusto" preserveAspectRatio="xMidYMid meet">
+            <defs>
+                <radialGradient id="degradadoArbusto" cx="50%" cy="50%" r="50%">
+                    <stop offset="0%" stop-color="#059669" />
+                    <stop offset="70%" stop-color="#047857" />
+                    <stop offset="100%" stop-color="#022c22" />
+                </radialGradient>
+            </defs>
+
+            <g id="baseFollaje">
+                <circle cx="400" cy="450" r="240" fill="url(#degradadoArbusto)" />
+                <circle cx="280" cy="400" r="160" fill="#047857" opacity="0.9" />
+                <circle cx="520" cy="400" r="160" fill="#047857" opacity="0.9" />
+                <circle cx="350" cy="300" r="150" fill="#059669" opacity="0.85" />
+                <circle cx="450" cy="300" r="150" fill="#059669" opacity="0.85" />
+                <circle cx="400" cy="260" r="130" fill="#10b981" opacity="0.75" />
+            </g>
+
+            <g id="ramas" stroke="#064e3b" stroke-width="8" stroke-linecap="round" fill="none">
+                <path d="M400 680 L400 400" />
+                <path d="M400 500 Q300 420 220 360" />
+                <path d="M400 500 Q500 420 580 360" />
+                <path d="M350 580 Q260 500 180 440" />
+                <path d="M450 580 Q540 500 620 440" />
+                <path d="M320 420 Q260 320 220 260" />
+                <path d="M480 420 Q540 320 580 260" />
+                <path d="M400 360 Q400 260 400 200" />
+            </g>
+
+            <g id="hojas"></g>
+            <g id="grupoRosas"></g>
+        </svg>
+    </div>
+
+    <script>
+        const lienzo = document.getElementById('lienzoFondo');
+        const contexto = lienzo.getContext('2d');
+        const svg = document.getElementById('svgArbusto');
+        const grupoRosas = document.getElementById('grupoRosas');
+        const hojas = document.getElementById('hojas');
+        const contenedorMensajes = document.getElementById('contenedorMensajes');
+        const audioFondo = document.getElementById('audioFondo');
+
+        let estrellas = [];
+        let particulasDoradas = [];
+        let audioInicializado = false;
+
+        const frases = [
+            "Te quiero mucho 💗",
+            "Eres súper especial para mí 💗",
+            "Me haces muy feliz 💗",
+            "Me encanta tenerte en mi vida 💗",
+            "Tu sonrisa ilumina todo 💗",
+            "Siempre pienso en ti 💗",
+            "Me haces sentir bien chido 💗",
+            "Contigo todo es más bonito 💗",
+            "Me encanta hablar contigo 💗",
+            "Eres alguien inolvidable 💗",
+            "Qué bonito coincidir contigo 💗",
+            "Gracias por existir 💗",
+            "Tu forma de ser es única 💗",
+            "Siempre en mi corazón 💗",
+            "Me alegra tanto conocerte 💗",
+            "Cada momento contigo es genial 💗",
+            "Eres de esas personas que valen oro 💗",
+            "Mi flor favorita en este mundo 💗",
+            "Te adoro muchísimo 💗",
+            "Eres arte puro 💗",
+            "Abacho fuerte para ti 💗",
+            "Eres la mejor 💗"
+        ];
+
+        const posicionesRosas = [
+            [400, 200, 1.3],
+            [320, 250, 1.15],
+            [480, 250, 1.15],
+            [230, 280, 1.1],
+            [570, 280, 1.1],
+            [400, 290, 1.25],
+            [350, 330, 1.2],
+            [450, 330, 1.2],
+            [270, 350, 1.1],
+            [530, 350, 1.1],
+            [190, 390, 1.05],
+            [610, 390, 1.05],
+            [380, 390, 1.25],
+            [420, 390, 1.25],
+            [310, 420, 1.15],
+            [490, 420, 1.15],
+            [240, 450, 1.1],
+            [560, 450, 1.1],
+            [360, 470, 1.2],
+            [440, 470, 1.2],
+            [280, 500, 1.1],
+            [520, 500, 1.1]
+        ];
+
+        function ajustarDimensiones() {
+            lienzo.width = window.innerWidth * devicePixelRatio;
+            lienzo.height = window.innerHeight * devicePixelRatio;
+            lienzo.style.width = `${window.innerWidth}px`;
+            lienzo.style.height = `${window.innerHeight}px`;
+            contexto.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
+        }
+
+        function crearEstrellas() {
+            estrellas = [];
+            const cantidad = window.innerWidth < 600 ? 90 : 160;
+            for (let i = 0; i < cantidad; i++) {
+                estrellas.push({
+                    x: Math.random() * window.innerWidth,
+                    y: Math.random() * window.innerHeight,
+                    radio: Math.random() * 1.5 + 0.4,
+                    alfa: Math.random(),
+                    velocidad: Math.random() * 0.02 + 0.005
+                });
+            }
+        }
+
+        function crearParticulas() {
+            particulasDoradas = [];
+            const cantidad = window.innerWidth < 600 ? 25 : 45;
+            for (let i = 0; i < cantidad; i++) {
+                particulasDoradas.push({
+                    x: Math.random() * window.innerWidth,
+                    y: Math.random() * window.innerHeight,
+                    radio: Math.random() * 2 + 0.8,
+                    velocidadY: -(Math.random() * 0.6 + 0.2),
+                    velocidadX: (Math.random() - 0.5) * 0.4,
+                    alfa: Math.random() * 0.7 + 0.3,
+                    fase: Math.random() * Math.PI * 2
+                });
+            }
+        }
+
+        function dibujarFondo() {
+            contexto.clearRect(0, 0, window.innerWidth, window.innerHeight);
+
+            estrellas.forEach(estrella => {
+                estrella.alfa += estrella.velocidad;
+                if (estrella.alfa > 1 || estrella.alfa < 0.15) {
+                    estrella.velocidad *= -1;
+                }
+                contexto.fillStyle = `rgba(255,255,255,${estrella.alfa})`;
+                contexto.beginPath();
+                contexto.arc(estrella.x, estrella.y, estrella.radio, 0, Math.PI * 2);
+                contexto.fill();
+            });
+
+            particulasDoradas.forEach(particula => {
+                particula.y += particula.velocidadY;
+                particula.x += particula.velocidadX + Math.sin(particula.fase) * 0.2;
+                particula.fase += 0.02;
+
+                if (particula.y < -10) {
+                    particula.y = window.innerHeight + 10;
+                    particula.x = Math.random() * window.innerWidth;
+                }
+
+                contexto.shadowBlur = 10;
+                contexto.shadowColor = '#fbbf24';
+                contexto.fillStyle = '#fde047';
+                contexto.globalAlpha = particula.alfa;
+
+                contexto.beginPath();
+                contexto.arc(particula.x, particula.y, particula.radio, 0, Math.PI * 2);
+                contexto.fill();
+                contexto.globalAlpha = 1;
+                contexto.shadowBlur = 0;
+            });
+
+            requestAnimationFrame(dibujarFondo);
+        }
+
+        function crearHojasArbusto() {
+            hojas.innerHTML = '';
+            const coordenadasHojas = [
+                [330, 380, -30], [470, 380, 30],
+                [250, 350, -45], [550, 350, 45],
+                [360, 450, -20], [440, 450, 20],
+                [290, 470, -35], [510, 470, 35],
+                [330, 540, -15], [470, 540, 15]
+            ];
+
+            coordenadasHojas.forEach(([x, y, rotacion]) => {
+                const hoja = document.createElementNS("http://www.w3.org/2000/svg", "ellipse");
+                hoja.setAttribute("cx", x);
+                hoja.setAttribute("cy", y);
+                hoja.setAttribute("rx", 32);
+                hoja.setAttribute("ry", 14);
+                hoja.setAttribute("fill", "#065f46");
+                hoja.setAttribute("transform", `rotate(${rotacion} ${x} ${y})`);
+                hojas.appendChild(hoja);
+            });
+        }
+
+        function construirRosaSVG(x, y, escala, mensaje, indice) {
+            const grupoRosa = document.createElementNS("http://www.w3.org/2000/svg", "g");
+            grupoRosa.classList.add("flor-rosa");
+            grupoRosa.setAttribute("transform", `translate(${x} ${y}) scale(${escala})`);
+            grupoRosa.dataset.mensaje = mensaje;
+
+            const paletaColores = [
+                ["#881337", "#e11d48", "#fb7185"],
+                ["#9f1239", "#f43f5e", "#fda4af"],
+                ["#be123c", "#fb7185", "#ffe4e6"]
+            ];
+            const colorSeleccionado = paletaColores[indice % paletaColores.length];
+
+            grupoRosa.innerHTML = `
+                <circle cx="0" cy="0" r="35" fill="rgba(244, 63, 94, 0.25)"/>
+                <path d="M-18,-15 Q-10,-30 8,-22 Q26,-18 21,2 Q27,18 8,24 Q-11,31 -20,13 Q-31,-1 -18,-15Z" fill="${colorSeleccionado[0]}"/>
+                <path d="M-13,-12 Q-6,-24 9,-18 Q21,-14 17,2 Q22,15 6,18 Q-9,23 -16,10 Q-23,0 -13,-12Z" fill="${colorSeleccionado[1]}"/>
+                <path d="M-9,-8 Q-3,-17 8,-12 Q17,-8 13,2 Q17,11 6,13 Q-7,17 -12,8 Q-17,0 -9,-8Z" fill="${colorSeleccionado[2]}"/>
+                <path d="M-5,-4 Q0,-11 7,-5 Q12,0 7,7 Q0,12 -7,7 Q-11,0 -5,-4Z" fill="#fff1f2"/>
+                <circle cx="0" cy="0" r="3.5" fill="#ffe4e6"/>
+            `;
+
+            grupoRosa.addEventListener("pointerdown", evento => {
+                evento.preventDefault();
+                evento.stopPropagation();
+                activarAudio();
+                mostrarMensajeRomantico(evento.clientX, evento.clientY, grupoRosa.dataset.mensaje);
+                lanzarParticulasBrillo(evento.clientX, evento.clientY);
+            });
+
+            grupoRosas.appendChild(grupoRosa);
+        }
+
+        function generarRosas() {
+            grupoRosas.innerHTML = "";
+            posicionesRosas.forEach((pos, idx) => {
+                construirRosaSVG(pos[0], pos[1], pos[2], frases[idx % frases.length], idx);
+            });
+        }
+
+        function activarAudio() {
+            if (audioInicializado) return;
+            audioFondo.volume = 0.6;
+            audioFondo.play().then(() => {
+                audioInicializado = true;
+            }).catch(() => { });
+        }
+
+        function mostrarMensajeRomantico(x, y, texto) {
+            const div = document.createElement("div");
+            div.className = "absolute mensaje-flotante pointer-events-none bg-rose-950/90 backdrop-blur-md border border-rose-400/80 text-rose-100 px-4 py-2.5 rounded-2xl shadow-2xl fuente-romantica text-2xl sm:text-3xl z-50";
+            div.textContent = texto;
+
+            const margen = 80;
+            const posX = Math.max(margen, Math.min(window.innerWidth - margen, x));
+            const posY = Math.max(80, Math.min(window.innerHeight - 80, y - 25));
+
+            div.style.left = `${posX}px`;
+            div.style.top = `${posY}px`;
+
+            contenedorMensajes.appendChild(div);
+
+            setTimeout(() => {
+                div.remove();
+            }, 3200);
+        }
+
+        function lanzarParticulasBrillo(x, y) {
+            const cantidad = window.innerWidth < 600 ? 12 : 18;
+            for (let i = 0; i < cantidad; i++) {
+                const angulo = Math.random() * Math.PI * 2;
+                const velocidad = Math.random() * 3.5 + 1;
+                const particula = {
+                    x, y,
+                    vx: Math.cos(angulo) * velocidad,
+                    vy: Math.sin(angulo) * velocidad,
+                    radio: Math.random() * 2.5 + 1,
+                    alfa: 1
+                };
+
+                function animarParticula() {
+                    particula.x += particula.vx;
+                    particula.y += particula.vy;
+                    particula.vy += 0.04;
+                    particula.alfa -= 0.045;
+
+                    contexto.fillStyle = Math.random() > 0.5 ? "#fda4af" : "#fde047";
+                    contexto.globalAlpha = Math.max(0, particula.alfa);
+                    contexto.beginPath();
+                    contexto.arc(particula.x, particula.y, particula.radio, 0, Math.PI * 2);
+                    contexto.fill();
+                    contexto.globalAlpha = 1;
+
+                    if (particula.alfa > 0) {
+                        requestAnimationFrame(animarParticula);
+                    }
+                }
+                animarParticula();
+            }
+        }
+
+        window.addEventListener("pointerdown", activarAudio, { passive: true });
+        window.addEventListener("resize", () => {
+            ajustarDimensiones();
+            crearEstrellas();
+            crearParticulas();
+        });
+
+        ajustarDimensiones();
+        crearEstrellas();
+        crearParticulas();
+        crearHojasArbusto();
+        generarRosas();
+        dibujarFondo();
+    </script>
+</body>
+
+</html>
