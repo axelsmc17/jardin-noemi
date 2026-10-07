@@ -1,0 +1,1389 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <title>Lavandas Nocturnas</title>
+
+    <style>
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            overflow: hidden;
+            background: #020106;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
+
+        body {
+            font-family: Georgia, "Times New Roman", serif;
+        }
+
+        canvas {
+            display: block;
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .mensaje {
+            position: fixed;
+            z-index: 4;
+            left: 50%;
+            bottom: 7%;
+            width: 90%;
+            transform: translateX(-50%);
+            text-align: center;
+            color: rgba(226, 216, 255, .58);
+            font-size: clamp(12px, 3.5vw, 17px);
+            letter-spacing: .12em;
+            text-shadow: 0 0 15px rgba(151, 116, 235, .65);
+            transition: opacity 1s ease, transform 1s ease;
+            pointer-events: none;
+        }
+
+        .mensaje.oculto {
+            opacity: 0;
+            transform: translate(-50%, 10px);
+        }
+
+        .boton-poema {
+            position: fixed;
+            z-index: 8;
+            right: 5%;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            border: 1px solid rgba(211, 190, 255, .38);
+            background: rgba(35, 25, 58, .48);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            color: #e8ddff;
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: 13px;
+            letter-spacing: .04em;
+            box-shadow:
+                0 0 20px rgba(137, 101, 207, .18),
+                inset 0 0 14px rgba(255, 255, 255, .04);
+            cursor: pointer;
+            transition:
+                transform .3s ease,
+                background .3s ease,
+                box-shadow .3s ease;
+        }
+
+        .boton-poema:active {
+            transform: translateY(-50%) scale(.92);
+        }
+
+        .boton-poema.activo {
+            background: rgba(101, 73, 148, .55);
+            box-shadow:
+                0 0 25px rgba(177, 139, 255, .35),
+                inset 0 0 15px rgba(255, 255, 255, .07);
+        }
+
+        .panel-poema {
+            position: fixed;
+            z-index: 7;
+            top: 50%;
+            right: 11%;
+            width: min(390px, 42vw);
+            max-height: 72vh;
+            transform:
+                translate(30px, -50%) scale(.96);
+
+            padding: 28px 27px;
+
+            border: 1px solid rgba(218, 200, 255, .22);
+            border-radius: 22px;
+
+            background:
+                linear-gradient(135deg,
+                    rgba(31, 23, 49, .70),
+                    rgba(12, 9, 22, .78));
+
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+
+            box-shadow:
+                0 15px 60px rgba(0, 0, 0, .42),
+                0 0 35px rgba(130, 94, 194, .12),
+                inset 0 1px 0 rgba(255, 255, 255, .07);
+
+            color: rgba(245, 240, 255, .91);
+
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+
+            overflow-y: auto;
+
+            transition:
+                opacity .45s ease,
+                transform .45s ease,
+                visibility .45s ease;
+
+            scrollbar-width: thin;
+            scrollbar-color: rgba(193, 166, 255, .35) transparent;
+        }
+
+        .panel-poema.abierto {
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+            transform:
+                translate(0, -50%) scale(1);
+        }
+
+        .titulo-poema {
+            margin: 0 0 18px;
+            text-align: center;
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: clamp(18px, 2.8vw, 25px);
+            font-weight: normal;
+            letter-spacing: .08em;
+            color: #e8dcff;
+            text-shadow: 0 0 14px rgba(172, 136, 244, .45);
+        }
+
+        .texto-poema {
+            margin: 0;
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: clamp(13px, 1.65vw, 16px);
+            line-height: 1.85;
+            font-weight: normal;
+            color: rgba(242, 237, 250, .86);
+            text-align: left;
+            white-space: pre-line;
+        }
+
+        .cerrar-poema {
+            position: absolute;
+            top: 10px;
+            right: 13px;
+            width: 28px;
+            height: 28px;
+            border: 0;
+            background: transparent;
+            color: rgba(232, 220, 255, .65);
+            font-family: Arial, sans-serif;
+            font-size: 20px;
+            font-weight: 300;
+            cursor: pointer;
+        }
+
+        @media(max-width:700px) {
+
+            .boton-poema {
+                right: 4%;
+                top: 46%;
+                width: 43px;
+                height: 43px;
+                font-size: 11px;
+            }
+
+            .panel-poema {
+                top: 50%;
+                left: 8%;
+                right: 8%;
+                width: auto;
+                max-height: 68vh;
+                padding: 27px 23px 24px;
+                border-radius: 20px;
+            }
+
+            .texto-poema {
+                font-size: 14px;
+                line-height: 1.75;
+            }
+
+            .titulo-poema {
+                font-size: 20px;
+                margin-bottom: 15px;
+            }
+        }
+
+        @media(max-height:600px) {
+
+            .panel-poema {
+                max-height: 76vh;
+            }
+
+            .texto-poema {
+                font-size: 13px;
+                line-height: 1.6;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <canvas id="escena"></canvas>
+
+    <div class="mensaje" id="mensaje">
+        toca la pantalla
+    </div>
+
+    <button class="boton-poema" id="botonPoema" type="button">
+        leer
+    </button>
+
+    <section class="panel-poema" id="panelPoema">
+
+        <button class="cerrar-poema" id="cerrarPoema" type="button">
+            ×
+        </button>
+
+        <h2 class="titulo-poema">
+            Para Noemí
+        </h2>
+
+        <p class="texto-poema">Entre mandarina, papaya y fresas te recuerdo,
+            y hasta el cangrejo sabe lo mucho que te quiero,
+            quizá parezca extraño que recuerde cada detalle,
+            pero es que contigo hasta lo pequeño se vuelve grande.
+
+            Sé que no buscas promesas ni historias de novela,
+            y que prefieres caminar tranquila, siendo tú misma y sincera,
+            por eso no quiero apresurar lo que tenga que pasar,
+            solo quiero disfrutar cada momento que me quieras regalar.
+
+            Te imagino entre tus cosas, corriendo hacia la UCE,
+            luchando por tus sueños aunque nadie más lo ve,
+            y admiro esa manera tan tuya de continuar,
+            de caer un poquito y aun así volver a intentar.
+
+            Recuerdo aquel vestido blanco y aquella tarde al caminar,
+            y cómo sin hacer demasiado lograste hacerme disfrutar,
+            también recuerdo tus palabras, tus bromas y tu forma de ser,
+            esas pequeñas cosas que me hacen quererte conocer.
+
+            Y aunque a veces me haga el fuerte y diga que no pasa nada,
+            la verdad es que tu presencia siempre deja algo en mi alma,
+            no sé qué nos depare el tiempo ni qué vaya a suceder,
+            pero me alegra muchísimo que la vida me haya hecho conocerte.
+
+            Así que si algún día dudas de lo especial que puedes ser,
+            recuerda que hay alguien que se alegra simplemente al verte,
+            y aunque estas palabras no alcancen para decirlo bonito,
+            Noemí, te quiero mucho, y me encanta que estés en mi camino.
+        </p>
+
+    </section>
+
+    <audio id="audio" src="../audios/lavanda.mp3" preload="auto" loop>
+    </audio>
+
+    <script>
+        const lienzo = document.getElementById("escena");
+        const contexto = lienzo.getContext("2d", { alpha: false });
+
+        const mensaje = document.getElementById("mensaje");
+        const audio = document.getElementById("audio");
+
+        const botonPoema = document.getElementById("botonPoema");
+        const panelPoema = document.getElementById("panelPoema");
+        const cerrarPoema = document.getElementById("cerrarPoema");
+
+        let ancho = 0;
+        let alto = 0;
+        let escala = 1;
+        let tiempo = 0;
+        let reproduciendo = false;
+
+        let estrellas = [];
+        let luciernagas = [];
+        let lavandas = [];
+        let estrellasFugaces = [];
+        let destellos = [];
+
+        const aleatorio = (minimo, maximo) => {
+            return Math.random() * (maximo - minimo) + minimo;
+        };
+
+        function ajustarLienzo() {
+
+            escala = Math.min(
+                window.devicePixelRatio || 1,
+                1.75
+            );
+
+            ancho = window.innerWidth;
+            alto = window.innerHeight;
+
+            lienzo.width =
+                Math.floor(ancho * escala);
+
+            lienzo.height =
+                Math.floor(alto * escala);
+
+            contexto.setTransform(
+                escala,
+                0,
+                0,
+                escala,
+                0,
+                0
+            );
+
+            crearEstrellas();
+            crearLuciernagas();
+            crearLavandas();
+        }
+
+        function crearEstrellas() {
+
+            estrellas = [];
+
+            const cantidad = Math.min(
+                190,
+                Math.max(
+                    75,
+                    Math.floor(ancho * alto / 7000)
+                )
+            );
+
+            for (
+                let indice = 0;
+                indice < cantidad;
+                indice++
+            ) {
+
+                estrellas.push({
+
+                    x: aleatorio(0, ancho),
+
+                    y: aleatorio(
+                        0,
+                        alto * .68
+                    ),
+
+                    radio: aleatorio(
+                        .35,
+                        1.25
+                    ),
+
+                    opacidad: aleatorio(
+                        .25,
+                        .9
+                    ),
+
+                    fase: aleatorio(
+                        0,
+                        Math.PI * 2
+                    ),
+
+                    velocidad: aleatorio(
+                        .35,
+                        1
+                    )
+                });
+            }
+        }
+
+        function crearLuciernagas() {
+
+            luciernagas = [];
+
+            const cantidad = Math.min(
+                28,
+                Math.max(
+                    12,
+                    Math.floor(ancho / 28)
+                )
+            );
+
+            for (
+                let indice = 0;
+                indice < cantidad;
+                indice++
+            ) {
+
+                luciernagas.push({
+
+                    x: aleatorio(
+                        0,
+                        ancho
+                    ),
+
+                    y: aleatorio(
+                        alto * .48,
+                        alto * .9
+                    ),
+
+                    radio: aleatorio(
+                        .7,
+                        1.7
+                    ),
+
+                    fase: aleatorio(
+                        0,
+                        Math.PI * 2
+                    ),
+
+                    velocidad: aleatorio(
+                        .2,
+                        .65
+                    ),
+
+                    amplitud: aleatorio(
+                        8,
+                        24
+                    )
+                });
+            }
+        }
+
+        function crearLavandas() {
+
+            lavandas = [];
+
+            const separacion = Math.max(
+                24,
+                Math.min(
+                    38,
+                    ancho / 11
+                )
+            );
+
+            const cantidad =
+                Math.ceil(
+                    ancho / separacion
+                ) + 3;
+
+            for (
+                let indice = 0;
+                indice < cantidad;
+                indice++
+            ) {
+
+                const profundidad =
+                    indice % 3;
+
+                lavandas.push({
+
+                    x:
+                        -separacion +
+                        indice * separacion +
+                        aleatorio(-7, 7),
+
+                    altura:
+                        alto *
+                        (
+                            .22 +
+                            Math.random() * .20
+                        ) *
+                        (
+                            profundidad === 0
+                                ? .82
+                                : profundidad === 1
+                                    ? .94
+                                    : 1
+                        ),
+
+                    inclinacion:
+                        aleatorio(-.08, .08),
+
+                    fase:
+                        aleatorio(
+                            0,
+                            Math.PI * 2
+                        ),
+
+                    velocidad:
+                        aleatorio(
+                            .45,
+                            .8
+                        ),
+
+                    escala:
+                        profundidad === 0
+                            ? .72
+                            : profundidad === 1
+                                ? .88
+                                : 1,
+
+                    profundidad
+                });
+            }
+        }
+
+        function dibujarCielo() {
+
+            const degradado =
+                contexto.createLinearGradient(
+                    0,
+                    0,
+                    0,
+                    alto
+                );
+
+            degradado.addColorStop(
+                0,
+                "#010105"
+            );
+
+            degradado.addColorStop(
+                .42,
+                "#05040b"
+            );
+
+            degradado.addColorStop(
+                .72,
+                "#0b0715"
+            );
+
+            degradado.addColorStop(
+                1,
+                "#12091b"
+            );
+
+            contexto.fillStyle = degradado;
+
+            contexto.fillRect(
+                0,
+                0,
+                ancho,
+                alto
+            );
+
+            const brillo =
+                contexto.createRadialGradient(
+                    ancho * .72,
+                    alto * .18,
+                    4,
+                    ancho * .72,
+                    alto * .18,
+                    Math.min(
+                        ancho,
+                        alto
+                    ) * .38
+                );
+
+            brillo.addColorStop(
+                0,
+                "rgba(181,157,255,.12)"
+            );
+
+            brillo.addColorStop(
+                .45,
+                "rgba(112,80,175,.035)"
+            );
+
+            brillo.addColorStop(
+                1,
+                "rgba(0,0,0,0)"
+            );
+
+            contexto.fillStyle = brillo;
+
+            contexto.fillRect(
+                0,
+                0,
+                ancho,
+                alto
+            );
+        }
+
+        function dibujarCorazon() {
+
+            const x = ancho * .32;
+            const y = alto * .24;
+
+            const tamaño =
+                Math.min(
+                    ancho,
+                    alto
+                ) * .095;
+
+            contexto.save();
+
+            contexto.translate(
+                x,
+                y
+            );
+
+            contexto.shadowColor =
+                "rgba(183,140,255,.72)";
+
+            contexto.shadowBlur = 28;
+
+            contexto.fillStyle =
+                "rgba(215,196,255,.92)";
+
+            contexto.beginPath();
+
+            contexto.moveTo(
+                0,
+                tamaño * .95
+            );
+
+            contexto.bezierCurveTo(
+                -tamaño * 1.25,
+                tamaño * .18,
+                -tamaño * .95,
+                -tamaño * .72,
+                0,
+                -tamaño * .25
+            );
+
+            contexto.bezierCurveTo(
+                tamaño * .95,
+                -tamaño * .72,
+                tamaño * 1.25,
+                tamaño * .18,
+                0,
+                tamaño * .95
+            );
+
+            contexto.fill();
+
+            contexto.shadowBlur = 12;
+
+            contexto.fillStyle =
+                "rgba(247,241,255,.88)";
+
+            contexto.beginPath();
+
+            contexto.moveTo(
+                -tamaño * .15,
+                tamaño * .38
+            );
+
+            contexto.bezierCurveTo(
+                -tamaño * .72,
+                -tamaño * .05,
+                -tamaño * .52,
+                -tamaño * .43,
+                -tamaño * .08,
+                -tamaño * .18
+            );
+
+            contexto.bezierCurveTo(
+                tamaño * .1,
+                -tamaño * .42,
+                tamaño * .38,
+                -tamaño * .18,
+                tamaño * .45,
+                -tamaño * .02
+            );
+
+            contexto.bezierCurveTo(
+                tamaño * .3,
+                tamaño * .2,
+                tamaño * .1,
+                tamaño * .38,
+                -tamaño * .15,
+                tamaño * .38
+            );
+
+            contexto.fill();
+
+            contexto.restore();
+        }
+
+        function dibujarMensaje() {
+
+            const x = ancho * .32;
+            const y = alto * .36;
+
+            const tamaño = Math.max(
+                19,
+                Math.min(
+                    34,
+                    ancho * .075
+                )
+            );
+
+            contexto.save();
+
+            contexto.textAlign = "center";
+            contexto.textBaseline = "middle";
+
+            contexto.font =
+                `italic ${tamaño}px "Segoe Print","Bradley Hand","Comic Sans MS",cursive`;
+
+            contexto.fillStyle =
+                "rgba(230,218,255,.88)";
+
+            contexto.shadowColor =
+                "rgba(163,125,240,.72)";
+
+            contexto.shadowBlur = 14;
+
+            contexto.fillText(
+                "Te quiero mucho",
+                x,
+                y
+            );
+
+            contexto.restore();
+        }
+
+        function dibujarEstrellas() {
+
+            for (
+                const estrella of estrellas
+            ) {
+
+                const brillo =
+                    estrella.opacidad *
+                    (
+                        .68 +
+                        .32 *
+                        Math.sin(
+                            tiempo *
+                            estrella.velocidad +
+                            estrella.fase
+                        )
+                    );
+
+                contexto.fillStyle =
+                    `rgba(238,233,255,${brillo})`;
+
+                contexto.beginPath();
+
+                contexto.arc(
+                    estrella.x,
+                    estrella.y,
+                    estrella.radio,
+                    0,
+                    Math.PI * 2
+                );
+
+                contexto.fill();
+            }
+        }
+
+        function dibujarLavanda(planta) {
+
+            const balanceo =
+                Math.sin(
+                    tiempo *
+                    planta.velocidad +
+                    planta.fase
+                ) * .035;
+
+            const escalaPlanta =
+                planta.escala;
+
+            const altura =
+                planta.altura;
+
+            contexto.save();
+
+            contexto.translate(
+                planta.x,
+                alto + 18
+            );
+
+            contexto.rotate(
+                planta.inclinacion +
+                balanceo
+            );
+
+            contexto.strokeStyle =
+                planta.profundidad === 0
+                    ? " #172118".trim()
+                    : "#29402d";
+
+            contexto.lineWidth =
+                1.5 *
+                escalaPlanta;
+
+            contexto.beginPath();
+
+            contexto.moveTo(
+                0,
+                0
+            );
+
+            contexto.quadraticCurveTo(
+                8 * escalaPlanta,
+                -altura * .48,
+                0,
+                -altura
+            );
+
+            contexto.stroke();
+
+            const inicio =
+                altura * .42;
+
+            const longitud =
+                altura * .58;
+
+            const pasos =
+                Math.max(
+                    7,
+                    Math.floor(
+                        altura / 9
+                    )
+                );
+
+            for (
+                let indice = 0;
+                indice <= pasos;
+                indice++
+            ) {
+
+                const progreso =
+                    indice / pasos;
+
+                const y =
+                    -inicio -
+                    longitud *
+                    progreso;
+
+                const anchoRacimo =
+                    Math.sin(
+                        progreso * Math.PI
+                    ) *
+                    8 *
+                    escalaPlanta +
+                    2;
+
+                const cantidad =
+                    progreso < .18
+                        ? 3
+                        : 4;
+
+                for (
+                    let flor = 0;
+                    flor < cantidad;
+                    flor++
+                ) {
+
+                    const lado =
+                        flor -
+                        (cantidad - 1) / 2;
+
+                    const x =
+                        lado *
+                        anchoRacimo *
+                        .32;
+
+                    const variacion =
+                        Math.sin(
+                            indice * 3.7 +
+                            flor * 2.1 +
+                            planta.fase
+                        ) * 1.4;
+
+                    const radio =
+                        (
+                            2.1 +
+                            Math.sin(
+                                progreso * Math.PI
+                            ) * 1.15
+                        ) *
+                        escalaPlanta;
+
+                    contexto.fillStyle =
+                        flor % 3 === 0
+                            ? " #c4adff".trim()
+                            : flor % 3 === 1
+                                ? " #9b7ce8".trim()
+                                : "#7859c8";
+
+                    contexto.beginPath();
+
+                    contexto.arc(
+                        x + variacion,
+                        y + variacion,
+                        radio,
+                        0,
+                        Math.PI * 2
+                    );
+
+                    contexto.fill();
+                }
+            }
+
+            contexto.strokeStyle =
+                planta.profundidad === 0
+                    ? " #1b281d".trim()
+                    : "#314a35";
+
+            contexto.lineWidth =
+                1.1 *
+                escalaPlanta;
+
+            for (
+                const posicion of [.54, .69]
+            ) {
+
+                const y =
+                    -altura *
+                    posicion;
+
+                contexto.beginPath();
+
+                contexto.moveTo(
+                    0,
+                    y
+                );
+
+                contexto.quadraticCurveTo(
+                    -10 * escalaPlanta,
+                    y - 4 * escalaPlanta,
+                    -17 * escalaPlanta,
+                    y - 13 * escalaPlanta
+                );
+
+                contexto.stroke();
+
+                contexto.beginPath();
+
+                contexto.moveTo(
+                    0,
+                    y + 4 * escalaPlanta
+                );
+
+                contexto.quadraticCurveTo(
+                    10 * escalaPlanta,
+                    y - 1 * escalaPlanta,
+                    16 * escalaPlanta,
+                    y - 10 * escalaPlanta
+                );
+
+                contexto.stroke();
+            }
+
+            contexto.restore();
+        }
+
+        function dibujarCampo() {
+
+            const orden =
+                [...lavandas].sort(
+                    (a, b) =>
+                        a.profundidad -
+                        b.profundidad
+                );
+
+            for (
+                const planta of orden
+            ) {
+                dibujarLavanda(planta);
+            }
+        }
+
+        function dibujarLuciernagas() {
+
+            for (
+                const luciernaga of luciernagas
+            ) {
+
+                const movimiento =
+                    Math.sin(
+                        tiempo *
+                        luciernaga.velocidad +
+                        luciernaga.fase
+                    );
+
+                const x =
+                    luciernaga.x +
+                    movimiento *
+                    luciernaga.amplitud;
+
+                const y =
+                    luciernaga.y +
+                    Math.cos(
+                        tiempo * .35 +
+                        luciernaga.fase
+                    ) * 7;
+
+                const opacidad =
+                    .16 +
+                    .18 *
+                    (movimiento + 1);
+
+                contexto.fillStyle =
+                    `rgba(201,178,255,${opacidad})`;
+
+                contexto.shadowColor =
+                    "rgba(171,132,255,.8)";
+
+                contexto.shadowBlur = 8;
+
+                contexto.beginPath();
+
+                contexto.arc(
+                    x,
+                    y,
+                    luciernaga.radio,
+                    0,
+                    Math.PI * 2
+                );
+
+                contexto.fill();
+
+                contexto.shadowBlur = 0;
+            }
+        }
+
+        function crearEstrellaFugaz() {
+
+            if (
+                estrellasFugaces.length >= 3
+            ) {
+                return;
+            }
+
+            estrellasFugaces.push({
+
+                x: aleatorio(
+                    ancho * .05,
+                    ancho * 1.05
+                ),
+
+                y: aleatorio(
+                    alto * .04,
+                    alto * .62
+                ),
+
+                velocidad: aleatorio(
+                    380,
+                    680
+                ),
+
+                vida: 0,
+
+                longitud: aleatorio(
+                    55,
+                    105
+                )
+            });
+        }
+
+        function dibujarEstrellasFugaces(delta) {
+
+            for (
+                let indice =
+                    estrellasFugaces.length - 1;
+                indice >= 0;
+                indice--
+            ) {
+
+                const estrella =
+                    estrellasFugaces[indice];
+
+                estrella.vida += delta;
+
+                estrella.x -=
+                    estrella.velocidad *
+                    delta;
+
+                estrella.y +=
+                    estrella.velocidad *
+                    .42 *
+                    delta;
+
+                const opacidad =
+                    Math.max(
+                        0,
+                        1 -
+                        estrella.vida / .75
+                    );
+
+                contexto.strokeStyle =
+                    `rgba(242,235,255,${opacidad})`;
+
+                contexto.lineWidth = 1.5;
+
+                contexto.beginPath();
+
+                contexto.moveTo(
+                    estrella.x,
+                    estrella.y
+                );
+
+                contexto.lineTo(
+                    estrella.x +
+                    estrella.longitud,
+                    estrella.y -
+                    estrella.longitud * .43
+                );
+
+                contexto.stroke();
+
+                if (
+                    estrella.vida > .75
+                ) {
+                    estrellasFugaces.splice(
+                        indice,
+                        1
+                    );
+                }
+            }
+        }
+
+        function crearDestello(x, y) {
+
+            destellos.push({
+                x,
+                y,
+                vida: 0
+            });
+
+            if (
+                destellos.length > 10
+            ) {
+                destellos.shift();
+            }
+        }
+
+        function dibujarDestellos(delta) {
+
+            for (
+                let indice =
+                    destellos.length - 1;
+                indice >= 0;
+                indice--
+            ) {
+
+                const destello =
+                    destellos[indice];
+
+                destello.vida += delta;
+
+                const progreso =
+                    destello.vida / .8;
+
+                const radio =
+                    8 +
+                    progreso *
+                    48;
+
+                const opacidad =
+                    1 -
+                    progreso;
+
+                contexto.strokeStyle =
+                    `rgba(193,166,255,${opacidad * .65})`;
+
+                contexto.lineWidth = 1.2;
+
+                contexto.beginPath();
+
+                contexto.arc(
+                    destello.x,
+                    destello.y,
+                    radio,
+                    0,
+                    Math.PI * 2
+                );
+
+                contexto.stroke();
+
+                if (
+                    destello.vida > .8
+                ) {
+                    destellos.splice(
+                        indice,
+                        1
+                    );
+                }
+            }
+        }
+
+        function dibujar(delta) {
+
+            tiempo += delta;
+
+            contexto.setTransform(
+                escala,
+                0,
+                0,
+                escala,
+                0,
+                0
+            );
+
+            dibujarCielo();
+            dibujarCorazon();
+            dibujarMensaje();
+            dibujarEstrellas();
+            dibujarEstrellasFugaces(delta);
+            dibujarCampo();
+            dibujarLuciernagas();
+            dibujarDestellos(delta);
+        }
+
+        let ultimoTiempo =
+            performance.now();
+
+        function animar(marcaTiempo) {
+
+            const delta =
+                Math.min(
+                    (marcaTiempo -
+                        ultimoTiempo) / 1000,
+                    .033
+                );
+
+            ultimoTiempo =
+                marcaTiempo;
+
+            dibujar(delta);
+
+            requestAnimationFrame(
+                animar
+            );
+        }
+
+        async function activarAudio() {
+
+            if (reproduciendo) {
+                return;
+            }
+
+            try {
+
+                await audio.play();
+
+                reproduciendo = true;
+
+                mensaje.classList.add(
+                    "oculto"
+                );
+
+            } catch (error) { }
+        }
+
+        function tocarPantalla(evento) {
+
+            if (
+                evento.target === botonPoema ||
+                evento.target === cerrarPoema ||
+                panelPoema.contains(evento.target)
+            ) {
+                return;
+            }
+
+            const punto =
+                evento.touches
+                    ? evento.touches[0]
+                    : evento;
+
+            crearDestello(
+                punto.clientX,
+                punto.clientY
+            );
+
+            activarAudio();
+        }
+
+        function abrirPoema() {
+
+            panelPoema.classList.add(
+                "abierto"
+            );
+
+            botonPoema.classList.add(
+                "activo"
+            );
+        }
+
+        function cerrarPanel() {
+
+            panelPoema.classList.remove(
+                "abierto"
+            );
+
+            botonPoema.classList.remove(
+                "activo"
+            );
+        }
+
+        botonPoema.addEventListener(
+            "click",
+            abrirPoema
+        );
+
+        cerrarPoema.addEventListener(
+            "click",
+            cerrarPanel
+        );
+
+        document.addEventListener(
+            "click",
+            evento => {
+                if (
+                    panelPoema.classList.contains("abierto") &&
+                    !panelPoema.contains(evento.target) &&
+                    evento.target !== botonPoema
+                ) {
+                    cerrarPanel();
+                }
+            }
+        );
+
+        window.addEventListener(
+            "resize",
+            ajustarLienzo,
+            { passive: true }
+        );
+
+        window.addEventListener(
+            "orientationchange",
+            () => {
+                setTimeout(
+                    ajustarLienzo,
+                    100
+                );
+            },
+            { passive: true }
+        );
+
+        window.addEventListener(
+            "pointerdown",
+            tocarPantalla,
+            { passive: true }
+        );
+
+        audio.addEventListener(
+            "ended",
+            () => {
+                reproduciendo = false;
+            }
+        );
+
+        audio.addEventListener(
+            "pause",
+            () => {
+                reproduciendo = false;
+            }
+        );
+
+        setInterval(
+            () => {
+                if (
+                    Math.random() < .9
+                ) {
+                    crearEstrellaFugaz();
+                }
+            },
+            2300
+        );
+
+        ajustarLienzo();
+
+        requestAnimationFrame(
+            animar
+        );
+    </script>
+
+</body>
+
+</html>
