@@ -22,6 +22,10 @@
     "ARBUSTO-7W7": {
         "nombre": "✨ Arbusto Floral",
         "archivoHtml": "flores/arbusto.html"
+    },
+    "LAVANDA-M34W": {
+        "nombre": "⭐ Lavanda",
+        "archivoHtml": "flores/lavanda.html"
     }
 }
     
